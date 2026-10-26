@@ -4,18 +4,21 @@ Reference the Creating an Entity Relationship Diagram final project guide in the
 
 ## List of Pages
 
-[👉🏾👉🏾👉🏾 List the pages you expect to have in your app, with a ⭐ next to pages you have wireframed]
+- ⭐ **Dashboard** (`/`): browse upcoming study sessions, search, filter by subject, and sort by date
+- ⭐ **Create Session** (modal on the dashboard): form to create a new study session without leaving the page
+- ⭐ **Session Details** (`/sessions/:id`): full session info, participant list, and join / leave / edit / delete actions
+- **Edit Session** (`/sessions/:id/edit`): pre-filled form for the organizer to update a session
+- **My Sessions** (`/my-sessions`): sessions the student organized or joined
+- **Not Found** (`*`): 404 page for unknown routes
 
-## Wireframe 1: [page title]
+## Wireframe 1: Dashboard
 
-[👉🏾👉🏾👉🏾 include wireframe 1]
+![Dashboard wireframe](images/dashboard.png)
 
-## Wireframe 2: [page title]
+## Wireframe 2: Create Session Modal
 
-[👉🏾👉🏾👉🏾 include wireframe 2]
+![Create Session modal wireframe](images/create-session.png)
 
-## Wireframe 3: [page title]
+## Wireframe 3: Session Details
 
-[👉🏾👉🏾👉🏾 include wireframe 3]
-
-[👉🏾👉🏾👉🏾 include more wireframes as desired]
+![Session Details wireframe](images/session-details.png)
