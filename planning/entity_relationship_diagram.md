@@ -65,5 +65,3 @@ The **composite primary key** (`student_id`, `session_id`) prevents the same stu
 | Leave session | `DELETE /api/sessions/:id/members/:studentId` | `session_memberships` |
 
 **Reset database requirement:** During implementation, add a seed/reset script that recreates or restores a default set of students, study sessions, and memberships.
-
-Editable SVG diagram source is included in `planning/erd/studypot-erd.svg`.

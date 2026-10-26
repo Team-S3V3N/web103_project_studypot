@@ -41,4 +41,3 @@ CodePath WEB103 Final Project · Milestone 2 (Unit 6)
 - The Create Session button opens the form modal; it does not navigate to a new route.
 - All drawings are **planning wireframes**, not screenshots of an implemented app.
 - The illustrations use example content for layout purposes. The finished app will load sessions from PostgreSQL through the Express REST API.
-- Editable vector originals are saved alongside each PNG inside `planning/wireframes/`.
