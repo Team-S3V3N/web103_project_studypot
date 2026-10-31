@@ -93,7 +93,7 @@ Students can open a modal from the dashboard to create a study session without l
 
 ### Prerequisites
 
-- Node.js 20.19+ and npm
+- Node.js 20.19+, npm, and PostgreSQL
 
 ### Run the app locally
 
@@ -103,12 +103,24 @@ Students can open a modal from the dashboard to create a study session without l
    npm install
    ```
 
-2. Start the React frontend and Express API together:
+2. Create a PostgreSQL database named `studypot`.
+
+3. Copy `server/.env.example` to `server/.env` and set `DATABASE_URL` to your PostgreSQL connection string. Never commit `server/.env`.
+
+4. Create the tables and sample records:
+
+   ```sh
+   npm run db:reset --workspace server
+   ```
+
+   **Warning:** this reset command drops and recreates the StudyPot tables.
+
+5. Start the React frontend and Express API together:
 
    ```sh
    npm run dev
    ```
 
-3. Open the frontend at `http://localhost:5173`. The page displays the API connection status.
+6. Open the frontend at `http://localhost:5173`.
 
-The API runs at `http://localhost:3000`; its `GET /api/health` endpoint returns a JSON status response. Vite proxies `/api` requests to the backend during development.
+The API runs at `http://localhost:3000`. Vite proxies `/api` requests to the backend during development.
