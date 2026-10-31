@@ -62,6 +62,21 @@ describe('apiRequest', () => {
     )
   })
 
+  it('explains how to recover from an unavailable API proxy', async () => {
+    await withMockedFetch(
+      async () => new Response('Bad Gateway', {
+        status: 502,
+        statusText: 'Bad Gateway',
+      }),
+      async () => {
+        await assert.rejects(
+          apiRequest('/sessions'),
+          /API server is unavailable.*Start the backend.*database configuration/,
+        )
+      },
+    )
+  })
+
   it('reports invalid JSON in a successful response', async () => {
     await withMockedFetch(
       async () => new Response('{not json', { status: 200 }),

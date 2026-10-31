@@ -21,6 +21,12 @@ export async function apiRequest(path, options = {}) {
   }
 
   if (!response.ok) {
+    if (response.status === 502) {
+      throw new Error(
+        'The API server is unavailable. Start the backend and check its database configuration, then retry.',
+      )
+    }
+
     throw new Error(
       data?.error ?? `Request failed with status ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`,
     )
