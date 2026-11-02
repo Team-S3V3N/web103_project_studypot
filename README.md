@@ -45,14 +45,18 @@ The features below are **planned** for the final app. We will check them off and
 Students can browse upcoming study sessions in one place. Each session card will show useful information like the subject, date, time, and location so students can quickly decide which sessions interest them.
 
 - [x] Implemented
-- **Demo GIF:** To be added
+- **Demo GIF:**
+
+  ![Study Session Dashboard demo](gifs/dashboard.gif)
 
 ### 2. ✅ Create a Study Session
 
 Students can create a study session by entering a title, subject, date, time, location, and short description. Once saved, the new session will appear in the dashboard for others to discover.
 
 - [x] Implemented
-- **Demo GIF:** To be added
+- **Demo GIF:**
+
+  ![Create a Study Session demo](gifs/create-session.gif)
 
 ### 3. Edit and Delete Sessions
 
@@ -66,28 +70,36 @@ Students can update the details of sessions they created or delete sessions they
 Students can join sessions they are interested in and leave them if their plans change. The app will keep track of which students are attending each session.
 
 - [x] Implemented
-- **Demo GIF:** To be added
+- **Demo GIF:**
+
+  ![Join and Leave Study Sessions demo](gifs/join-leave.gif)
 
 ### 5. ✅ Study Session Details
 
 Students can open a dedicated page for any study session to see its full description, subject, schedule, location, and list of participants.
 
 - [x] Implemented
-- **Demo GIF:** To be added
+- **Demo GIF:**
+
+  ![Study Session Details demo](gifs/session-details.gif)
 
 ### 6. ✅ Search and Filter Sessions
 
 Students can search for study sessions and filter them by subject or date. This will help them find relevant sessions without scrolling through every available option.
 
 - [x] Implemented
-- **Demo GIF:** To be added
+- **Demo GIF:**
+
+  ![Search and Filter Sessions demo](gifs/search-filter.gif)
 
 ### 7. ✅ Create Session Modal
 
 Students can open a modal from the dashboard to create a study session without leaving the page. After submitting the form, the dashboard will update to show the new session.
 
 - [x] Implemented
-- **Demo GIF:** To be added
+- **Demo GIF:**
+
+  ![Create Session Modal demo](gifs/create-session.gif)
 
 ## Installation Instructions
 

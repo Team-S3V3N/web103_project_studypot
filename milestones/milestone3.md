@@ -28,7 +28,7 @@ You will need to reference the GitHub Project Management guide in the course por
     5. Final Milestone: Deployment and Demo Day
   - [x] Set the completion percentage of each milestone. The GitHub Milestone for this unit (Milestone 3 - Unit 7) should be 100% completed when you submit for full points.
 - [x] In `readme.md`, check off the features you have completed in this unit by adding a ✅ emoji in front of the feature's name.
-  - [ ] Under each feature you have completed, include a GIF showing feature functionality.
+  - [x] Under each feature you have completed, include a GIF showing feature functionality.
 - [x] In this documents, complete all five questions in the **Reflection** section below.
 
 ## Reflection
