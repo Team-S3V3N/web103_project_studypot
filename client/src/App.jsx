@@ -1,27 +1,85 @@
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { BrowserRouter, Link, NavLink, Route, Routes } from 'react-router-dom'
+import { CampusProvider, useCampus } from './campus/CampusContext.jsx'
+import CampusSwitcher from './components/CampusSwitcher.jsx'
+import ProfileMenu from './components/ProfileMenu.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import SessionDetails from './pages/SessionDetails.jsx'
+import SignIn from './pages/SignIn.jsx'
 import './App.css'
 
+// The app has no real accounts yet, so everyone uses this demo student.
+const DEMO_STUDENT = { name: 'Alex Morgan' }
+const SIGNED_OUT_KEY = 'studypot-signed-out'
+
+function readSignedIn() {
+  try {
+    return window.localStorage.getItem(SIGNED_OUT_KEY) !== 'true'
+  } catch {
+    return true
+  }
+}
+
 function AppLayout() {
+  const { campus } = useCampus()
+  const [signedIn, setSignedIn] = useState(readSignedIn)
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(SIGNED_OUT_KEY, String(!signedIn))
+    } catch {
+      // Storage can be blocked; the choice still holds for this visit.
+    }
+  }, [signedIn])
+
   return (
     <div className="app-shell">
       <header className="site-header">
-        <Link className="wordmark" to="/" aria-label="StudyPot home">
-          <span className="wordmark-icon" aria-hidden="true">s</span>
-          <span>studypot</span>
-        </Link>
-        <nav className="site-nav" aria-label="Main navigation">
-          <Link to="/">Discover</Link>
-          <span className="student-label">Alex Morgan</span>
-        </nav>
+        <div className="site-header-inner">
+          <Link className="wordmark" to="/" aria-label="StudyPot home">
+            <span className="wordmark-name">StudyPot</span>
+            {!campus.isDefault && <span className="wordmark-campus">{campus.name}</span>}
+          </Link>
+
+          {signedIn && (
+            <nav className="site-nav" aria-label="Main navigation">
+              <NavLink to="/" end>Sessions</NavLink>
+            </nav>
+          )}
+
+          <div className="header-tools">
+            <CampusSwitcher />
+            {signedIn && <ProfileMenu student={DEMO_STUDENT} onSignOut={() => setSignedIn(false)} />}
+          </div>
+        </div>
       </header>
 
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/sessions/:id" element={<SessionDetails />} />
-        <Route path="*" element={<section className="empty-panel"><h1>Page not found</h1><Link className="text-link" to="/">Back to sessions</Link></section>} />
-      </Routes>
+      {signedIn ? (
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/sessions/:id" element={<SessionDetails />} />
+          <Route
+            path="*"
+            element={(
+              <main className="page-content">
+                <section className="empty-panel">
+                  <h1>Page not found</h1>
+                  <Link className="text-link" to="/">Back to sessions</Link>
+                </section>
+              </main>
+            )}
+          />
+        </Routes>
+      ) : (
+        <SignIn student={DEMO_STUDENT} onSignIn={() => setSignedIn(true)} />
+      )}
+
+      <footer className="site-footer">
+        <span>StudyPot</span>
+        {campus.isDefault
+          ? <span>Find your study crew.</span>
+          : <span>{campus.name} is a fictional demo campus. StudyPot is not affiliated with any university.</span>}
+      </footer>
     </div>
   )
 }
@@ -29,7 +87,9 @@ function AppLayout() {
 function App() {
   return (
     <BrowserRouter>
-      <AppLayout />
+      <CampusProvider>
+        <AppLayout />
+      </CampusProvider>
     </BrowserRouter>
   )
 }

@@ -58,10 +58,7 @@ function CreateSessionModal({ onClose, onCreated }) {
         onKeyDown={handleKeyDown}
       >
         <div className="modal-header">
-          <div>
-            <p className="eyebrow">Bring your study crew together</p>
-            <h2 id="create-session-heading">Create a session</h2>
-          </div>
+          <h2 id="create-session-heading">Host a session</h2>
           <button
             className="icon-button"
             type="button"
@@ -108,7 +105,7 @@ function CreateSessionModal({ onClose, onCreated }) {
               Cancel
             </button>
             <button className="button button-primary" type="submit" disabled={saving}>
-              {saving ? 'Creating…' : 'Create session'}
+              {saving ? 'Posting…' : 'Post session'}
             </button>
           </div>
         </form>

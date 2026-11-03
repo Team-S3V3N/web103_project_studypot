@@ -1,25 +1,39 @@
 import { Link } from 'react-router-dom'
-import { formatSessionDate, formatSessionTime } from '../lib/formatters.js'
+import { formatSessionTime, getSessionDateParts } from '../lib/formatters.js'
+import { describeAttendance, getSessionStatus } from '../lib/sessionStatus.js'
 
-function SessionCard({ session }) {
+function SessionCard({ session, now }) {
+  const { month, day, weekday } = getSessionDateParts(session.session_date)
+  const status = getSessionStatus(session, now)
+  const count = session.participant_count
+
   return (
     <article className="session-card">
-      <span className="subject-pill">{session.subject}</span>
-      <h3>{session.title}</h3>
-      <p className="session-meta">
-        <span aria-hidden="true">◷</span>
-        {formatSessionDate(session.session_date)} · {formatSessionTime(session.session_time)}
-      </p>
-      <p className="session-meta">
-        <span aria-hidden="true">⌖</span>
-        {session.location}
-      </p>
-      <p className="session-host">
-        Hosted by {session.creator_name} · {session.participant_count} {session.participant_count === 1 ? 'student' : 'students'} joined
-      </p>
-      <Link className="card-link" to={`/sessions/${session.id}`}>
-        View details <span aria-hidden="true">→</span>
-      </Link>
+      <div className="session-card-top">
+        <div className="date-block" aria-hidden="true">
+          <span className="date-block-month">{month}</span>
+          <span className="date-block-day">{day}</span>
+        </div>
+        <div className="session-card-when">
+          <p className="session-subject">{session.subject}</p>
+          <p className="session-time">
+            <span className="visually-hidden">{month} {day}, </span>
+            {weekday} · {formatSessionTime(session.session_time)}
+          </p>
+        </div>
+        <span className={`status-tag status-${status.state}`}>{status.label}</span>
+      </div>
+
+      <h3>
+        <Link className="session-card-link" to={`/sessions/${session.id}`}>{session.title}</Link>
+      </h3>
+      <p className="session-location">{session.location}</p>
+      <p className="session-host">Hosted by {session.creator_name}</p>
+
+      <div className="session-card-footer">
+        <span className="attending">{describeAttendance(count)}</span>
+        <span className="session-card-cta" aria-hidden="true">Details</span>
+      </div>
     </article>
   )
 }

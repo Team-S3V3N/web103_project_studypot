@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import CreateSessionModal from '../components/CreateSessionModal.jsx'
 import SessionCard from '../components/SessionCard.jsx'
+import Spinner from '../components/Spinner.jsx'
 import { apiRequest } from '../api.js'
+import { useNow } from '../lib/sessionStatus.js'
 
 function Dashboard() {
+  const now = useNow()
   const [sessions, setSessions] = useState([])
   const [search, setSearch] = useState('')
   const [subject, setSubject] = useState('')
@@ -58,16 +61,19 @@ function Dashboard() {
     })
   }, [date, search, sessions, subject])
 
+  const filtersActive = Boolean(search || subject || date)
+
   return (
     <main className="page-content">
       <section className="page-heading">
         <div>
-          <p className="eyebrow">Make progress together</p>
           <h1>Find your study crew.</h1>
-          <p className="page-description">Explore upcoming sessions and learn better together.</p>
+          <p className="page-description">
+            Join a group that’s already meeting, or start one for your class.
+          </p>
         </div>
         <button className="button button-primary create-session-button" type="button" onClick={() => setCreateModalOpen(true)}>
-          <span aria-hidden="true">+</span> Create session
+          Host a session
         </button>
       </section>
 
@@ -75,10 +81,10 @@ function Dashboard() {
 
       <section className="filters-panel" aria-label="Filter study sessions">
         <label className="search-field">
-          <span>Search sessions</span>
+          <span>Search</span>
           <input
             type="search"
-            placeholder="Search by title or subject"
+            placeholder="Course, topic, or session name"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
@@ -95,15 +101,16 @@ function Dashboard() {
           <input type="date" value={date} onChange={(event) => setDate(event.target.value)} />
         </label>
         <button
-          className="button button-secondary reset-button"
+          className="button button-quiet reset-button"
           type="button"
+          disabled={!filtersActive}
           onClick={() => {
             setSearch('')
             setSubject('')
             setDate('')
           }}
         >
-          Reset
+          Clear filters
         </button>
       </section>
 
@@ -117,7 +124,7 @@ function Dashboard() {
           )}
         </div>
 
-        {loading && <p className="status-panel" role="status">Loading study sessions…</p>}
+        {loading && <Spinner label="Loading study sessions" />}
         {!loading && error && (
           <div className="status-panel error-panel" role="alert">
             <p>We couldn’t load study sessions: {error}</p>
@@ -131,24 +138,21 @@ function Dashboard() {
           </div>
         )}
         {!loading && !error && sessions.length === 0 && (
-          <p className="status-panel">No study sessions are available yet. Check back soon.</p>
+          <p className="status-panel">No study sessions are scheduled yet. Host the first one.</p>
         )}
         {!loading && !error && sessions.length > 0 && filteredSessions.length === 0 && (
-          <p className="status-panel">No sessions match your search. Try another subject or reset your filters.</p>
+          <p className="status-panel">No sessions match those filters. Try another subject or clear your filters.</p>
         )}
         {!loading && !error && filteredSessions.length > 0 && (
-          <div className="session-grid">
+          <ol className="session-grid">
             {filteredSessions.map((session) => (
-              <SessionCard key={session.id} session={session} />
+              <li key={session.id}>
+                <SessionCard session={session} now={now} />
+              </li>
             ))}
-          </div>
+          </ol>
         )}
       </section>
-
-      <aside className="how-it-works">
-        <h2>How it works</h2>
-        <p>1. Discover sessions <span aria-hidden="true">→</span> 2. View details <span aria-hidden="true">→</span> 3. Join your group</p>
-      </aside>
 
       {createModalOpen && (
         <CreateSessionModal
