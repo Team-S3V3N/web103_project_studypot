@@ -10,9 +10,11 @@ function getLocalDate() {
   return `${year}-${month}-${day}`
 }
 
-function CreateSessionModal({ onClose, onCreated }) {
+// Pass `session` to edit an existing session; leave it out to host a new one.
+function CreateSessionModal({ session, onClose, onCreated }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const isEditing = Boolean(session)
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -20,13 +22,13 @@ function CreateSessionModal({ onClose, onCreated }) {
     setError('')
 
     const formData = new FormData(event.currentTarget)
-    const session = Object.fromEntries(formData.entries())
+    const sessionFields = Object.fromEntries(formData.entries())
 
     try {
-      await apiRequest('/sessions', {
-        method: 'POST',
+      await apiRequest(isEditing ? `/sessions/${encodeURIComponent(session.id)}` : '/sessions', {
+        method: isEditing ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...session, creator_id: 1 }),
+        body: JSON.stringify(isEditing ? sessionFields : { ...sessionFields, creator_id: 1 }),
       })
       onCreated()
     } catch (requestError) {
@@ -58,11 +60,11 @@ function CreateSessionModal({ onClose, onCreated }) {
         onKeyDown={handleKeyDown}
       >
         <div className="modal-header">
-          <h2 id="create-session-heading">Host a session</h2>
+          <h2 id="create-session-heading">{isEditing ? 'Edit session' : 'Host a session'}</h2>
           <button
             className="icon-button"
             type="button"
-            aria-label="Close create session form"
+            aria-label={`Close ${isEditing ? 'edit' : 'create'} session form`}
             disabled={saving}
             onClick={onClose}
           >
@@ -73,29 +75,35 @@ function CreateSessionModal({ onClose, onCreated }) {
         <form className="session-form" onSubmit={handleSubmit}>
           <label>
             <span>Session title</span>
-            <input name="title" type="text" maxLength="150" required autoFocus />
+            <input name="title" type="text" maxLength="150" required autoFocus defaultValue={session?.title ?? ''} />
           </label>
           <label>
             <span>Subject</span>
-            <input name="subject" type="text" maxLength="100" required />
+            <input name="subject" type="text" maxLength="100" required defaultValue={session?.subject ?? ''} />
           </label>
           <div className="form-row">
             <label>
               <span>Date</span>
-              <input name="session_date" type="date" min={getLocalDate()} required />
+              <input
+                name="session_date"
+                type="date"
+                min={isEditing ? undefined : getLocalDate()}
+                required
+                defaultValue={session?.session_date?.slice(0, 10) ?? ''}
+              />
             </label>
             <label>
               <span>Time</span>
-              <input name="session_time" type="time" required />
+              <input name="session_time" type="time" required defaultValue={session?.session_time?.slice(0, 5) ?? ''} />
             </label>
           </div>
           <label>
             <span>Location</span>
-            <input name="location" type="text" maxLength="200" required />
+            <input name="location" type="text" maxLength="200" required defaultValue={session?.location ?? ''} />
           </label>
           <label>
             <span>Description <span className="optional-label">(optional)</span></span>
-            <textarea name="description" rows="3" maxLength="5000" />
+            <textarea name="description" rows="3" maxLength="5000" defaultValue={session?.description ?? ''} />
           </label>
 
           {error && <p className="form-error" role="alert">{error}</p>}
@@ -105,7 +113,7 @@ function CreateSessionModal({ onClose, onCreated }) {
               Cancel
             </button>
             <button className="button button-primary" type="submit" disabled={saving}>
-              {saving ? 'Posting…' : 'Post session'}
+              {saving ? (isEditing ? 'Saving…' : 'Posting…') : (isEditing ? 'Save changes' : 'Post session')}
             </button>
           </div>
         </form>

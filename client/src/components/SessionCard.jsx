@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { formatSessionTime, getSessionDateParts } from '../lib/formatters.js'
 import { describeAttendance, getSessionStatus } from '../lib/sessionStatus.js'
 
-function SessionCard({ session, now }) {
+function SessionCard({ session, now, onEdit, onDelete, deleting = false }) {
   const { month, day, weekday } = getSessionDateParts(session.session_date)
   const status = getSessionStatus(session, now)
   const count = session.participant_count
@@ -32,7 +32,25 @@ function SessionCard({ session, now }) {
 
       <div className="session-card-footer">
         <span className="attending">{describeAttendance(count)}</span>
-        <span className="session-card-cta" aria-hidden="true">Details</span>
+        <div className="session-card-actions">
+          <button
+            className="card-action"
+            type="button"
+            aria-label={`Edit ${session.title}`}
+            onClick={() => onEdit(session)}
+          >
+            Edit
+          </button>
+          <button
+            className="card-action card-action-danger"
+            type="button"
+            aria-label={`Delete ${session.title}`}
+            disabled={deleting}
+            onClick={() => onDelete(session)}
+          >
+            {deleting ? 'Deleting…' : 'Delete'}
+          </button>
+        </div>
       </div>
     </article>
   )

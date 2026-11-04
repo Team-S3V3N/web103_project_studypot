@@ -169,6 +169,23 @@
   background: var(--subtle);
 }
 
+.host-actions {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.host-actions .button {
+  min-height: 38px;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+.host-message {
+  margin: 12px 0 0;
+}
+
 .timeline-rsvp {
   padding: 20px;
   border: 1px solid var(--rule);

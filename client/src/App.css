@@ -370,6 +370,10 @@
   font-size: 13px;
 }
 
+.dashboard-error {
+  margin-bottom: 20px;
+}
+
 .status-panel,
 .empty-panel {
   margin: 0;
@@ -704,14 +708,58 @@
   font-size: 13px;
 }
 
-.session-card-cta {
+/* Sit above the card-wide link so the buttons stay clickable. */
+.session-card-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 14px;
+}
+
+.card-action {
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--brand-ink);
+  cursor: pointer;
+  font: inherit;
   font-size: 14px;
   font-weight: 600;
 }
 
-.session-card-cta::after {
-  content: " →";
+.card-action:hover:not(:disabled) {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.card-action:focus-visible {
+  outline: 2px solid var(--brand-ink);
+  outline-offset: 2px;
+}
+
+.card-action:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.card-action-danger {
+  color: #a1261f;
+}
+
+.button-danger {
+  border: 1px solid #efcfcb;
+  background: var(--card);
+  color: #a1261f;
+}
+
+.button-danger:hover:not(:disabled) {
+  border-color: #a1261f;
+  background: #fdf3f2;
+}
+
+.button-danger:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 /* ---------- Session details (shared bits; layout lives in pages/session-details) ---------- */
