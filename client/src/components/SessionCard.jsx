@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { formatSessionDate, formatSessionTime } from '../lib/formatters.js'
 
-function SessionCard({ session }) {
+function SessionCard({ session, onEdit, onDelete, deleting = false }) {
   return (
     <article className="session-card">
       <span className="subject-pill">{session.subject}</span>
@@ -17,9 +17,24 @@ function SessionCard({ session }) {
       <p className="session-host">
         Hosted by {session.creator_name} · {session.participant_count} {session.participant_count === 1 ? 'student' : 'students'} joined
       </p>
-      <Link className="card-link" to={`/sessions/${session.id}`}>
-        View details <span aria-hidden="true">→</span>
-      </Link>
+      <div className="session-card-actions">
+        <Link className="card-link" to={`/sessions/${session.id}`}>
+          View details <span aria-hidden="true">→</span>
+        </Link>
+        <div className="session-management-actions">
+          <button className="button button-secondary" type="button" onClick={() => onEdit(session)}>
+            Edit
+          </button>
+          <button
+            className="button button-danger"
+            type="button"
+            disabled={deleting}
+            onClick={() => onDelete(session)}
+          >
+            {deleting ? 'Deleting…' : 'Delete'}
+          </button>
+        </div>
+      </div>
     </article>
   )
 }

@@ -190,6 +190,17 @@
   color: #5d47c3;
 }
 
+.button-danger {
+  border: 1px solid #eccaca;
+  background: #fff;
+  color: #a63e3e;
+}
+
+.button-danger:hover:not(:disabled) {
+  border-color: #d99a9a;
+  background: #fff7f7;
+}
+
 .reset-button {
   min-width: 92px;
 }
@@ -293,6 +304,26 @@
   color: #4936ac;
 }
 
+.session-card-actions {
+  margin-top: auto;
+}
+
+.session-card-actions .card-link {
+  display: block;
+}
+
+.session-management-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.session-management-actions .button {
+  min-height: 38px;
+  padding: 0 14px;
+}
+
 .status-panel,
 .empty-panel {
   padding: 24px;
@@ -357,6 +388,18 @@
 
 .details-heading {
   margin-bottom: 25px;
+}
+
+.details-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.details-title-row .session-management-actions {
+  flex: 0 0 auto;
+  margin-top: 0;
 }
 
 .details-heading .subject-pill {
@@ -661,6 +704,11 @@
   .details-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+  }
+
+  .details-title-row {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 

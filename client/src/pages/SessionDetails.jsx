@@ -1,20 +1,25 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { apiRequest } from '../api.js'
+import CreateSessionModal from '../components/CreateSessionModal.jsx'
 import { formatSessionDate, formatSessionTime } from '../lib/formatters.js'
 
 const DEMO_STUDENT_ID = 1
 
 function SessionDetails() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [actionError, setActionError] = useState('')
+  const [managementError, setManagementError] = useState('')
   const [notice, setNotice] = useState('')
   const [membershipPending, setMembershipPending] = useState(false)
   const [retryToken, setRetryToken] = useState(0)
   const [participantRefreshFailed, setParticipantRefreshFailed] = useState(false)
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [deletingSession, setDeletingSession] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -90,6 +95,23 @@ function SessionDetails() {
     }
   }
 
+  async function handleDeleteSession() {
+    if (!window.confirm(`Delete "${session.title}"? This cannot be undone.`)) {
+      return
+    }
+
+    setDeletingSession(true)
+    setManagementError('')
+
+    try {
+      await apiRequest(`/sessions/${encodeURIComponent(id)}`, { method: 'DELETE' })
+      navigate('/')
+    } catch (requestError) {
+      setManagementError(requestError.message)
+      setDeletingSession(false)
+    }
+  }
+
   if (loading) {
     return <main className="page-content"><p className="status-panel" role="status">Loading session details…</p></main>
   }
@@ -121,10 +143,29 @@ function SessionDetails() {
       <Link className="text-link back-link" to="/">← Back to sessions</Link>
 
       <section className="details-heading">
-        <span className="subject-pill">{session.subject}</span>
-        <h1>{session.title}</h1>
+        <div className="details-title-row">
+          <div>
+            <span className="subject-pill">{session.subject}</span>
+            <h1>{session.title}</h1>
+          </div>
+          <div className="session-management-actions">
+            <button className="button button-secondary" type="button" onClick={() => setEditModalOpen(true)}>
+              Edit session
+            </button>
+            <button
+              className="button button-danger"
+              type="button"
+              disabled={deletingSession}
+              onClick={handleDeleteSession}
+            >
+              {deletingSession ? 'Deleting…' : 'Delete session'}
+            </button>
+          </div>
+        </div>
         <p>{session.description || 'The host has not added a description yet.'}</p>
       </section>
+
+      {managementError && <p className="form-error" role="alert">{managementError}</p>}
 
       <div className="details-grid">
         <section className="information-panel" aria-labelledby="information-heading">
@@ -204,6 +245,20 @@ function SessionDetails() {
           <p className="status-panel">No one has joined yet. Be the first to join this session.</p>
         )}
       </section>
+
+      {editModalOpen && (
+        <CreateSessionModal
+          session={session}
+          onClose={() => setEditModalOpen(false)}
+          onCreated={() => {
+            setEditModalOpen(false)
+            setNotice('Your study session has been updated.')
+            setActionError('')
+            setManagementError('')
+            setRetryToken((token) => token + 1)
+          }}
+        />
+      )}
     </main>
   )
 }
