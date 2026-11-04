@@ -12,6 +12,9 @@ function Dashboard() {
   const [error, setError] = useState('')
   const [retryToken, setRetryToken] = useState(0)
   const [createModalOpen, setCreateModalOpen] = useState(false)
+  const [editingSession, setEditingSession] = useState(null)
+  const [deletingSessionId, setDeletingSessionId] = useState(null)
+  const [actionError, setActionError] = useState('')
   const [notice, setNotice] = useState('')
 
   useEffect(() => {
@@ -58,6 +61,26 @@ function Dashboard() {
     })
   }, [date, search, sessions, subject])
 
+  async function handleDeleteSession(session) {
+    if (!window.confirm(`Delete "${session.title}"? This cannot be undone.`)) {
+      return
+    }
+
+    setDeletingSessionId(session.id)
+    setActionError('')
+    setNotice('')
+
+    try {
+      await apiRequest(`/sessions/${encodeURIComponent(session.id)}`, { method: 'DELETE' })
+      setNotice('The study session has been deleted.')
+      setRetryToken((token) => token + 1)
+    } catch (requestError) {
+      setActionError(requestError.message)
+    } finally {
+      setDeletingSessionId(null)
+    }
+  }
+
   return (
     <main className="page-content">
       <section className="page-heading">
@@ -72,6 +95,7 @@ function Dashboard() {
       </section>
 
       {notice && <p className="success-notice" role="status">{notice}</p>}
+      {actionError && <p className="form-error" role="alert">{actionError}</p>}
 
       <section className="filters-panel" aria-label="Filter study sessions">
         <label className="search-field">
@@ -139,7 +163,13 @@ function Dashboard() {
         {!loading && !error && filteredSessions.length > 0 && (
           <div className="session-grid">
             {filteredSessions.map((session) => (
-              <SessionCard key={session.id} session={session} />
+              <SessionCard
+                key={session.id}
+                session={session}
+                deleting={deletingSessionId === session.id}
+                onEdit={setEditingSession}
+                onDelete={handleDeleteSession}
+              />
             ))}
           </div>
         )}
@@ -156,6 +186,18 @@ function Dashboard() {
           onCreated={() => {
             setCreateModalOpen(false)
             setNotice('Your study session has been created.')
+            setRetryToken((token) => token + 1)
+          }}
+        />
+      )}
+      {editingSession && (
+        <CreateSessionModal
+          session={editingSession}
+          onClose={() => setEditingSession(null)}
+          onCreated={() => {
+            setEditingSession(null)
+            setNotice('Your study session has been updated.')
+            setActionError('')
             setRetryToken((token) => token + 1)
           }}
         />
