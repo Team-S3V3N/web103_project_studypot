@@ -10,6 +10,7 @@ function getLocalDate() {
   return `${year}-${month}-${day}`
 }
 
+// Pass `session` to edit an existing session; leave it out to host a new one.
 function CreateSessionModal({ session, onClose, onCreated }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -59,10 +60,7 @@ function CreateSessionModal({ session, onClose, onCreated }) {
         onKeyDown={handleKeyDown}
       >
         <div className="modal-header">
-          <div>
-            <p className="eyebrow">Bring your study crew together</p>
-            <h2 id="create-session-heading">{isEditing ? 'Edit session' : 'Create a session'}</h2>
-          </div>
+          <h2 id="create-session-heading">{isEditing ? 'Edit session' : 'Host a session'}</h2>
           <button
             className="icon-button"
             type="button"
@@ -115,7 +113,7 @@ function CreateSessionModal({ session, onClose, onCreated }) {
               Cancel
             </button>
             <button className="button button-primary" type="submit" disabled={saving}>
-              {saving ? (isEditing ? 'Saving…' : 'Creating…') : (isEditing ? 'Save changes' : 'Create session')}
+              {saving ? (isEditing ? 'Saving…' : 'Posting…') : (isEditing ? 'Save changes' : 'Post session')}
             </button>
           </div>
         </form>

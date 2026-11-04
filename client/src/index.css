@@ -1,12 +1,31 @@
 :root {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Campus colors. CampusProvider overwrites these when a campus is picked. */
+  --brand: #2b2724;
+  --on-brand: #ffffff;
+  --accent: #d9733f;
+  --on-accent: #1f1a17;
+  --brand-ink: #a3461f;
+  --surface: #f6f1ea;
+
+  /* Neutrals shared by every campus. */
+  --paper: #fbfaf8;
+  --card: #ffffff;
+  --text: #1c1e21;
+  --muted: #555b63;
+  --subtle: #7b8088;
+  --rule: #e4e1db;
+  --rule-strong: #cdc9c1;
+
+  --font-display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-body: "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  font-family: var(--font-body);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #334438;
-  background: #fbfcf8;
-  font-optical-sizing: auto;
+  color: var(--text);
+  background: var(--paper);
 }
 
 * {
@@ -20,6 +39,21 @@ body {
 }
 
 button,
-a {
+a,
+input,
+select,
+textarea {
   font: inherit;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
