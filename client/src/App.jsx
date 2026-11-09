@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Link, NavLink, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom'
 import { CampusProvider, useCampus } from './campus/CampusContext.jsx'
 import CampusSwitcher from './components/CampusSwitcher.jsx'
 import ProfileMenu from './components/ProfileMenu.jsx'
+import SiteFooter from './components/SiteFooter.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import EditSession from './pages/EditSession.jsx'
 import NewSession from './pages/NewSession.jsx'
@@ -25,6 +26,9 @@ function AppLayout() {
   const { campus } = useCampus()
   const { student } = useStudent()
   const [signedIn, setSignedIn] = useState(readSignedIn)
+  const { pathname } = useLocation()
+  // The dashboard has its own big "Host a session" button, and the host page is the form itself.
+  const showHostButton = signedIn && pathname !== '/' && pathname !== '/sessions/new'
 
   useEffect(() => {
     try {
@@ -43,13 +47,13 @@ function AppLayout() {
             {!campus.isDefault && <span className="wordmark-campus">{campus.name}</span>}
           </Link>
 
-          {signedIn && (
-            <nav className="site-nav" aria-label="Main navigation">
-              <NavLink to="/" end>Sessions</NavLink>
-            </nav>
-          )}
-
           <div className="header-tools">
+            {showHostButton && (
+              <Link className="button button-primary header-host-button" to="/sessions/new">
+                <span className="header-host-full">Host a session</span>
+                <span className="header-host-short">Host</span>
+              </Link>
+            )}
             <CampusSwitcher />
             {signedIn && (
               <>
@@ -89,12 +93,7 @@ function AppLayout() {
         <SignIn student={student} onSignIn={() => setSignedIn(true)} />
       )}
 
-      <footer className="site-footer">
-        <span>StudyPot</span>
-        {campus.isDefault
-          ? <span>Find your study crew.</span>
-          : <span>{campus.name} is a fictional demo campus. StudyPot is not affiliated with any university.</span>}
-      </footer>
+      <SiteFooter signedIn={signedIn} />
     </div>
   )
 }
