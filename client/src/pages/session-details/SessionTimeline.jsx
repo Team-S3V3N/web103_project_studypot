@@ -24,7 +24,7 @@ function buildSteps(times, now) {
 }
 
 // Session details: everything needed to decide up top, then a step-by-step plan for the session.
-function SessionTimeline({ details, status, now, onEdit, onDelete }) {
+function SessionTimeline({ details, status, now, notice, onEdit, onDelete }) {
   const { session } = details
   const { student } = useStudent()
   const steps = status.times ? buildSteps(status.times, now) : []
@@ -65,7 +65,7 @@ function SessionTimeline({ details, status, now, onEdit, onDelete }) {
             </div>
           )}
           {details.managementError && <p className="form-error host-message" role="alert">{details.managementError}</p>}
-          {details.managementNotice && <p className="success-notice host-message" role="status">{details.managementNotice}</p>}
+          {notice && <p className="success-notice host-message" role="status">{notice}</p>}
         </div>
 
         <div className="timeline-rsvp">

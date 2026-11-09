@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import CreateSessionModal from '../components/CreateSessionModal.jsx'
+import { Link, useNavigate } from 'react-router-dom'
 import SessionCard from '../components/SessionCard.jsx'
 import Spinner from '../components/Spinner.jsx'
 import { apiRequest } from '../api.js'
@@ -7,6 +7,7 @@ import { useNow } from '../lib/sessionStatus.js'
 
 function Dashboard() {
   const now = useNow()
+  const navigate = useNavigate()
   const [sessions, setSessions] = useState([])
   const [search, setSearch] = useState('')
   const [subject, setSubject] = useState('')
@@ -14,8 +15,6 @@ function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [retryToken, setRetryToken] = useState(0)
-  const [createModalOpen, setCreateModalOpen] = useState(false)
-  const [editingSession, setEditingSession] = useState(null)
   const [deletingSessionId, setDeletingSessionId] = useState(null)
   const [actionError, setActionError] = useState('')
   const [notice, setNotice] = useState('')
@@ -95,9 +94,9 @@ function Dashboard() {
             Join a group that’s already meeting, or start one for your class.
           </p>
         </div>
-        <button className="button button-primary create-session-button" type="button" onClick={() => setCreateModalOpen(true)}>
+        <Link className="button button-primary create-session-button" to="/sessions/new">
           Host a session
-        </button>
+        </Link>
       </section>
 
       {notice && <p className="success-notice" role="status">{notice}</p>}
@@ -175,7 +174,7 @@ function Dashboard() {
                   session={session}
                   now={now}
                   deleting={deletingSessionId === session.id}
-                  onEdit={setEditingSession}
+                  onEdit={(item) => navigate(`/sessions/${item.id}/edit`)}
                   onDelete={handleDeleteSession}
                 />
               </li>
@@ -183,29 +182,6 @@ function Dashboard() {
           </ol>
         )}
       </section>
-
-      {createModalOpen && (
-        <CreateSessionModal
-          onClose={() => setCreateModalOpen(false)}
-          onCreated={() => {
-            setCreateModalOpen(false)
-            setNotice('Your study session has been created.')
-            setRetryToken((token) => token + 1)
-          }}
-        />
-      )}
-      {editingSession && (
-        <CreateSessionModal
-          session={editingSession}
-          onClose={() => setEditingSession(null)}
-          onCreated={() => {
-            setEditingSession(null)
-            setNotice('Your study session has been updated.')
-            setActionError('')
-            setRetryToken((token) => token + 1)
-          }}
-        />
-      )}
     </main>
   )
 }

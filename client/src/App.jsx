@@ -4,6 +4,8 @@ import { CampusProvider, useCampus } from './campus/CampusContext.jsx'
 import CampusSwitcher from './components/CampusSwitcher.jsx'
 import ProfileMenu from './components/ProfileMenu.jsx'
 import Dashboard from './pages/Dashboard.jsx'
+import EditSession from './pages/EditSession.jsx'
+import NewSession from './pages/NewSession.jsx'
 import SessionDetails from './pages/SessionDetails.jsx'
 import SignIn from './pages/SignIn.jsx'
 import { StudentProvider, useStudent } from './student/StudentContext.jsx'
@@ -68,7 +70,9 @@ function AppLayout() {
       {signedIn ? (
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/sessions/new" element={<NewSession />} />
           <Route path="/sessions/:id" element={<SessionDetails />} />
+          <Route path="/sessions/:id/edit" element={<EditSession />} />
           <Route
             path="*"
             element={(

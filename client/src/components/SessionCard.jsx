@@ -21,7 +21,7 @@ function SessionCard({ session, now, onEdit, onDelete, deleting = false }) {
           <p className="session-subject">{session.subject}</p>
           <p className="session-time">
             <span className="visually-hidden">{month} {day}, </span>
-            {weekday} · {formatSessionTime(session.session_time)}
+            {weekday && `${weekday} · `}{formatSessionTime(session.session_time)}
           </p>
         </div>
         <span className={`status-tag status-${status.state}`}>{status.label}</span>

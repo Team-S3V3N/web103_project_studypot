@@ -1,6 +1,5 @@
-import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import CreateSessionModal from '../components/CreateSessionModal.jsx'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import Spinner from '../components/Spinner.jsx'
 import { getSessionStatus, useNow } from '../lib/sessionStatus.js'
 import { BackLink } from './session-details/parts.jsx'
@@ -12,8 +11,17 @@ function SessionDetails() {
   const { id } = useParams()
   const now = useNow()
   const navigate = useNavigate()
+  const location = useLocation()
   const details = useSessionDetails(id)
-  const [editModalOpen, setEditModalOpen] = useState(false)
+  // A "created" or "updated" message handed over by the form page. Shown once:
+  // it is cleared from history so a refresh doesn't show it again.
+  const [notice] = useState(location.state?.notice ?? '')
+
+  useEffect(() => {
+    if (location.state?.notice) {
+      navigate(location.pathname, { replace: true, state: null })
+    }
+  }, [location.pathname, location.state, navigate])
 
   async function handleDeleteSession() {
     if (!window.confirm(`Delete "${details.session.title}"? This cannot be undone.`)) {
@@ -49,20 +57,10 @@ function SessionDetails() {
         details={details}
         status={getSessionStatus(details.session, now)}
         now={now}
-        onEdit={() => setEditModalOpen(true)}
+        notice={notice}
+        onEdit={() => navigate(`/sessions/${encodeURIComponent(id)}/edit`)}
         onDelete={handleDeleteSession}
       />
-
-      {editModalOpen && (
-        <CreateSessionModal
-          session={details.session}
-          onClose={() => setEditModalOpen(false)}
-          onCreated={() => {
-            setEditModalOpen(false)
-            details.refreshAfterEdit()
-          }}
-        />
-      )}
     </main>
   )
 }

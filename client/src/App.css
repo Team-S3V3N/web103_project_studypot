@@ -295,11 +295,15 @@
 .button {
   min-height: 44px;
   padding: 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 0;
   border-radius: 4px;
   cursor: pointer;
   font-size: 15px;
   font-weight: 600;
+  text-decoration: none;
 }
 
 .button-primary {
@@ -797,59 +801,23 @@
   font-weight: 600;
 }
 
-/* ---------- Create session modal ---------- */
+/* ---------- Host / edit session pages ---------- */
 
-.modal-backdrop {
-  position: fixed;
-  z-index: 20;
-  inset: 0;
-  padding: 24px;
-  display: grid;
-  place-items: center;
-  overflow-y: auto;
-  background: rgba(20, 22, 26, 0.55);
-}
-
-.create-modal {
-  width: min(100%, 560px);
-  max-height: calc(100vh - 48px);
-  padding: 28px;
-  overflow-y: auto;
-  border-radius: 6px;
-  background: var(--card);
-  box-shadow: 0 24px 60px rgba(20, 22, 26, 0.25);
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 22px;
-}
-
-.modal-header h2 {
+.form-page h1 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: clamp(30px, 4vw, 40px);
   font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
 }
 
-.icon-button {
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--rule-strong);
-  border-radius: 4px;
-  background: var(--card);
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 22px;
-  line-height: 1;
+.form-page .status-panel {
+  margin-top: 20px;
 }
 
-.icon-button:hover:not(:disabled) {
-  border-color: var(--text);
-  color: var(--text);
+.form-page .page-description {
+  margin-top: 8px;
 }
 
 .session-form {
@@ -886,13 +854,7 @@
   font-weight: 400;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.modal-actions {
+.form-actions {
   margin-top: 6px;
   display: flex;
   justify-content: flex-end;
@@ -1042,19 +1004,5 @@
   .error-panel {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  .modal-backdrop {
-    padding: 12px;
-    align-items: end;
-  }
-
-  .create-modal {
-    max-height: calc(100vh - 24px);
-    padding: 22px 18px;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
   }
 }
