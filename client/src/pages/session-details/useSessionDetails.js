@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { apiRequest } from '../../api.js'
+import { CURRENT_STUDENT } from '../../lib/currentStudent.js'
 
-export const DEMO_STUDENT_ID = 1
+const DEMO_STUDENT_ID = CURRENT_STUDENT.id
 
 // Loads one session and handles RSVP / cancel, editing and deleting. Shared by every details layout.
 export function useSessionDetails(id) {

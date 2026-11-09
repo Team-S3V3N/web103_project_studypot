@@ -6,10 +6,9 @@ import ProfileMenu from './components/ProfileMenu.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import SessionDetails from './pages/SessionDetails.jsx'
 import SignIn from './pages/SignIn.jsx'
+import { CURRENT_STUDENT } from './lib/currentStudent.js'
 import './App.css'
 
-// The app has no real accounts yet, so everyone uses this demo student.
-const DEMO_STUDENT = { name: 'Alex Morgan' }
 const SIGNED_OUT_KEY = 'studypot-signed-out'
 
 function readSignedIn() {
@@ -49,7 +48,7 @@ function AppLayout() {
 
           <div className="header-tools">
             <CampusSwitcher />
-            {signedIn && <ProfileMenu student={DEMO_STUDENT} onSignOut={() => setSignedIn(false)} />}
+            {signedIn && <ProfileMenu student={CURRENT_STUDENT} onSignOut={() => setSignedIn(false)} />}
           </div>
         </div>
       </header>
@@ -71,7 +70,7 @@ function AppLayout() {
           />
         </Routes>
       ) : (
-        <SignIn student={DEMO_STUDENT} onSignIn={() => setSignedIn(true)} />
+        <SignIn student={CURRENT_STUDENT} onSignIn={() => setSignedIn(true)} />
       )}
 
       <footer className="site-footer">

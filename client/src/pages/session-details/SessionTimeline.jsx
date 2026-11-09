@@ -1,4 +1,5 @@
 import { formatSessionDate } from '../../lib/formatters.js'
+import { isHost } from '../../lib/currentStudent.js'
 import { describeAttendance } from '../../lib/sessionStatus.js'
 import { getRsvpHeading } from './copy.js'
 import {
@@ -46,19 +47,21 @@ function SessionTimeline({ details, status, now, onEdit, onDelete }) {
             <span className="timeline-dot" aria-hidden="true" />
             <Icon name="pin" /> {session.location}
           </p>
-          <div className="host-actions">
-            <button className="button button-secondary" type="button" onClick={onEdit}>
-              Edit session
-            </button>
-            <button
-              className="button button-danger"
-              type="button"
-              disabled={details.deletingSession}
-              onClick={onDelete}
-            >
-              {details.deletingSession ? 'Deleting…' : 'Delete session'}
-            </button>
-          </div>
+          {isHost(session) && (
+            <div className="host-actions">
+              <button className="button button-secondary" type="button" onClick={onEdit}>
+                Edit session
+              </button>
+              <button
+                className="button button-danger"
+                type="button"
+                disabled={details.deletingSession}
+                onClick={onDelete}
+              >
+                {details.deletingSession ? 'Deleting…' : 'Delete session'}
+              </button>
+            </div>
+          )}
           {details.managementError && <p className="form-error host-message" role="alert">{details.managementError}</p>}
           {details.managementNotice && <p className="success-notice host-message" role="status">{details.managementNotice}</p>}
         </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { apiRequest } from '../api.js'
+import { CURRENT_STUDENT } from '../lib/currentStudent.js'
 
 function getLocalDate() {
   const now = new Date()
@@ -28,7 +29,7 @@ function CreateSessionModal({ session, onClose, onCreated }) {
       await apiRequest(isEditing ? `/sessions/${encodeURIComponent(session.id)}` : '/sessions', {
         method: isEditing ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(isEditing ? sessionFields : { ...sessionFields, creator_id: 1 }),
+        body: JSON.stringify(isEditing ? sessionFields : { ...sessionFields, creator_id: CURRENT_STUDENT.id }),
       })
       onCreated()
     } catch (requestError) {
