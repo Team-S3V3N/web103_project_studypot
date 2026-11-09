@@ -88,12 +88,7 @@ function Dashboard() {
   return (
     <main className="page-content">
       <section className="page-heading">
-        <div>
-          <h1>Find your study crew.</h1>
-          <p className="page-description">
-            Join a group that’s already meeting, or start one for your class.
-          </p>
-        </div>
+        <h1>Study sessions</h1>
         <Link className="button button-primary create-session-button" to="/sessions/new">
           Host a session
         </Link>

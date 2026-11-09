@@ -19,7 +19,8 @@
 /* ---------- Header (neutral on every campus) ---------- */
 
 .site-header {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 10;
   border-bottom: 1px solid var(--rule);
   background: var(--card);
@@ -422,7 +423,7 @@
 
 .page-heading {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 32px;
   margin-bottom: 24px;
@@ -890,12 +891,6 @@
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
   gap: 32px;
-}
-
-.footer-brand p {
-  max-width: 340px;
-  margin: 10px 0 0;
-  line-height: 1.55;
 }
 
 .footer-wordmark {

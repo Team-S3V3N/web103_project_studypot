@@ -12,7 +12,6 @@ function SiteFooter({ signedIn }) {
         <div className="footer-top">
           <div className="footer-brand">
             <Link className="footer-wordmark" to="/">StudyPot</Link>
-            <p>Find your study crew. Join a group that’s already meeting, or start one for your class.</p>
           </div>
 
           {signedIn && (
