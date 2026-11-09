@@ -1,0 +1,380 @@
+/* ---------- Host / edit session form ---------- */
+
+.visual-form {
+  margin: 28px 0 48px;
+  gap: 20px;
+}
+
+.visual-form-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-areas: "what when";
+  gap: 20px;
+  align-items: stretch;
+}
+
+.form-panel-what {
+  grid-area: what;
+}
+
+.form-panel-when {
+  grid-area: when;
+}
+
+.form-panel {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--card);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field-label {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.field-hint {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--subtle);
+  font-size: 13px;
+}
+
+.session-form input::placeholder,
+.session-form textarea::placeholder {
+  color: var(--subtle);
+}
+
+/* Chips: subject shortcuts and time slots */
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  min-height: 34px;
+  padding: 0 13px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.chip:hover {
+  border-color: var(--brand-ink);
+  color: var(--brand-ink);
+}
+
+.chip[aria-pressed="true"] {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+/* Calendar */
+
+.calendar {
+  padding: 14px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--paper);
+}
+
+.calendar-header {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.calendar-month {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.calendar-nav {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.calendar-nav:hover:not(:disabled) {
+  border-color: var(--brand-ink);
+  color: var(--brand-ink);
+}
+
+.calendar-nav:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.calendar-weekday {
+  padding: 4px 0;
+  color: var(--subtle);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.calendar-day {
+  position: relative;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.calendar-day:hover:not([aria-disabled="true"]):not(.is-selected) {
+  box-shadow: inset 0 0 0 1.5px var(--brand-ink);
+  color: var(--brand-ink);
+}
+
+.calendar-day.is-today {
+  box-shadow: inset 0 0 0 1.5px var(--rule-strong);
+}
+
+.calendar-day.is-selected {
+  background: var(--brand);
+  box-shadow: none;
+  color: var(--on-brand);
+}
+
+.calendar-day[aria-disabled="true"] {
+  color: var(--rule-strong);
+  cursor: default;
+}
+
+.calendar-day:focus-visible,
+.calendar-nav:focus-visible,
+.chip:focus-visible {
+  outline: 2px solid var(--brand-ink);
+  outline-offset: 2px;
+}
+
+.calendar-dot {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.calendar-day .calendar-dot {
+  position: absolute;
+  bottom: 4px;
+  left: calc(50% - 2.5px);
+}
+
+.calendar-day.is-selected .calendar-dot {
+  background: var(--on-brand);
+}
+
+/* Time */
+
+.time-picker {
+  position: relative;
+}
+
+.time-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.time-trigger {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.time-trigger:hover,
+.time-trigger[aria-expanded="true"] {
+  border-color: var(--brand-ink);
+}
+
+.time-trigger:focus-visible {
+  outline: 2px solid var(--brand-ink);
+  outline-offset: 2px;
+}
+
+.time-placeholder {
+  color: var(--subtle);
+}
+
+/* Exact time: "4:15" box + AM | PM switch */
+
+.exact-time {
+  min-width: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.session-form .exact-time input {
+  min-width: 0;
+  flex: 1;
+}
+
+.ampm {
+  flex: 0 0 auto;
+  padding: 3px;
+  display: flex;
+  gap: 3px;
+  border-radius: 6px;
+  background: #f1efeb;
+}
+
+.ampm button {
+  min-width: 42px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ampm button[aria-pressed="true"] {
+  background: var(--card);
+  box-shadow: 0 1px 2px rgba(20, 22, 26, 0.12);
+  color: var(--text);
+}
+
+.ampm button:focus-visible {
+  outline: 2px solid var(--brand-ink);
+  outline-offset: 1px;
+}
+
+/* The list of half-hour times that opens under "Pick a time". */
+.time-popover {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 6px);
+  left: 0;
+  width: calc(50% - 6px);
+  max-height: 240px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--card);
+  box-shadow: 0 10px 30px rgba(20, 22, 26, 0.12);
+  animation: dropdown-in 140ms ease-out;
+}
+
+.time-option {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 14px;
+  text-align: left;
+}
+
+.time-option:hover {
+  background: #f3f2ef;
+}
+
+.time-option[aria-pressed="true"] {
+  background: #efede8;
+  color: var(--brand-ink);
+  font-weight: 600;
+}
+
+.time-option:focus-visible {
+  outline: 2px solid var(--brand-ink);
+  outline-offset: -2px;
+}
+
+/* Buttons */
+
+.visual-form-submit {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.visual-form-submit .form-actions {
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  .visual-form-columns {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "what"
+      "when";
+  }
+}
+
+@media (max-width: 640px) {
+
+  .form-panel {
+    padding: 20px 16px;
+  }
+
+  .visual-form-submit {
+    align-items: stretch;
+  }
+
+  .visual-form-submit .form-actions .button {
+    flex: 1;
+  }
+}

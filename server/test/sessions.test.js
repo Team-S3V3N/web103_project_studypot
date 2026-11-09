@@ -41,6 +41,10 @@ async function createTestServer() {
         return { rowCount: values[0] === 1 ? 1 : 0 }
       }
 
+      if (sql.startsWith('SELECT creator_id FROM study_sessions')) {
+        return { rows: values[0] === 1 ? [{ creator_id: sampleSession.creator_id }] : [] }
+      }
+
       if (sql.startsWith('SELECT id FROM study_sessions')) {
         return { rows: values[0] === 1 ? [{ id: 1 }] : [] }
       }
@@ -204,7 +208,7 @@ describe('study session API', () => {
   it('updates supplied session fields', async () => {
     const response = await fetch(`${testServer.url}/1`, {
       method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', 'x-student-id': '1' },
       body: JSON.stringify({ title: 'Updated title' }),
     })
     const body = await response.json()
@@ -214,9 +218,41 @@ describe('study session API', () => {
     assert.equal(body.session.title, 'Updated title')
   })
 
+  it('only lets the host edit a session', async () => {
+    const callsBefore = testServer.calls.length
+    const stranger = await fetch(`${testServer.url}/1`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-student-id': '2' },
+      body: JSON.stringify({ title: 'Hijacked' }),
+    })
+    const anonymous = await fetch(`${testServer.url}/1`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ title: 'Hijacked' }),
+    })
+
+    assert.equal(stranger.status, 403)
+    assert.equal(anonymous.status, 401)
+    assert.ok(!testServer.calls.slice(callsBefore).some(({ sql }) => sql.startsWith('UPDATE')))
+  })
+
+  it('only lets the host delete a session', async () => {
+    const callsBefore = testServer.calls.length
+    const stranger = await fetch(`${testServer.url}/1`, {
+      method: 'DELETE',
+      headers: { 'x-student-id': '2' },
+    })
+    const anonymous = await fetch(`${testServer.url}/1`, { method: 'DELETE' })
+
+    assert.equal(stranger.status, 403)
+    assert.equal(anonymous.status, 401)
+    assert.ok(!testServer.calls.slice(callsBefore).some(({ sql }) => sql.startsWith('DELETE')))
+  })
+
   it('deletes sessions and reports missing records', async () => {
-    const deleted = await fetch(`${testServer.url}/1`, { method: 'DELETE' })
-    const missing = await fetch(`${testServer.url}/2`, { method: 'DELETE' })
+    const headers = { 'x-student-id': '1' }
+    const deleted = await fetch(`${testServer.url}/1`, { method: 'DELETE', headers })
+    const missing = await fetch(`${testServer.url}/2`, { method: 'DELETE', headers })
 
     assert.equal(deleted.status, 204)
     assert.equal(missing.status, 404)

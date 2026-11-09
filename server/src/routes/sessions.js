@@ -87,6 +87,28 @@ function normalizeSessionFields(fields) {
 export function createSessionsRouter(pool) {
   const router = Router()
 
+  // Only the student who created a session may edit or delete it.
+  // There are no real accounts yet, so the client names its student in the X-Student-Id header.
+  async function findHostError(sessionId, request) {
+    const studentId = parseId(request.get('x-student-id'))
+    if (!studentId) {
+      return { status: 401, error: 'Sign in to manage this session' }
+    }
+
+    const { rows } = await pool.query(
+      'SELECT creator_id FROM study_sessions WHERE id = $1',
+      [sessionId],
+    )
+    if (!rows[0]) {
+      return { status: 404, error: 'Study session not found' }
+    }
+    if (rows[0].creator_id !== studentId) {
+      return { status: 403, error: 'Only the host can edit or delete this session' }
+    }
+
+    return null
+  }
+
   router.get('/', async (request, response) => {
     const filters = []
     const values = []
@@ -290,6 +312,11 @@ export function createSessionsRouter(pool) {
       return response.status(400).json({ error: 'Invalid session data', details: errors })
     }
 
+    const hostError = await findHostError(id, request)
+    if (hostError) {
+      return response.status(hostError.status).json({ error: hostError.error })
+    }
+
     const values = changedFields.map((field) => (
       field === 'description' && fields[field] === '' ? null :
         typeof fields[field] === 'string' ? fields[field].trim() : fields[field]
@@ -317,6 +344,11 @@ export function createSessionsRouter(pool) {
     const id = parseId(request.params.id)
     if (!id) {
       return response.status(400).json({ error: 'Session id must be a positive integer' })
+    }
+
+    const hostError = await findHostError(id, request)
+    if (hostError) {
+      return response.status(hostError.status).json({ error: hostError.error })
     }
 
     const { rowCount } = await pool.query(

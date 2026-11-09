@@ -1,4 +1,4 @@
-# studypot
+# Studypot
 
 **CodePath WEB103 Final Project**
 
@@ -58,12 +58,14 @@ Students can create a study session by entering a title, subject, date, time, lo
 
   ![Create a Study Session demo](gifs/create-session.gif)
 
-### 3. Edit and Delete Sessions
+### 3. ✅ Edit and Delete Sessions
 
-Students can update the details of sessions they created or delete sessions they no longer want to host. Changes will be saved to the database and reflected in the app.
+Students can update the details of sessions they created or delete sessions they no longer want to host. Only the student who created a session can edit or delete it. Changes are saved to the database and reflected in the app.
 
-- [ ] Implemented
-- **Demo GIF:** To be added
+- [x] Implemented
+- **Demo GIF:**
+
+  ![Edit and Delete Sessions demo](gifs/edit-delete.gif)
 
 ### 4. ✅ Join and Leave Study Sessions
 
@@ -92,14 +94,32 @@ Students can search for study sessions and filter them by subject or date. This 
 
   ![Search and Filter Sessions demo](gifs/search-filter.gif)
 
-### 7. ✅ Create Session Modal
+### 7. ✅ Host and Edit Session Pages
 
-Students can open a modal from the dashboard to create a study session without leaving the page. After submitting the form, the dashboard will update to show the new session.
+Students host or edit a session on its own page. They pick the date from a calendar that shows which days already have sessions, choose a time from a list or type an exact time with AM/PM, and tap a subject other sessions already use. After saving, they land on the session's page.
 
 - [x] Implemented
 - **Demo GIF:**
 
-  ![Create Session Modal demo](gifs/create-session.gif)
+  ![Host and Edit Session Pages demo](gifs/host-edit-pages.gif)
+
+### 8. ✅ Account Switching
+
+Students can switch between accounts from the profile menu next to their name. Edit and Delete buttons, RSVPs, and new sessions follow whoever is signed in. Log out is its own button in the top bar.
+
+- [x] Implemented
+- **Demo GIF:**
+
+  ![Account Switching demo](gifs/account-switching.gif)
+
+### 9. ✅ Updated Top Bar, Footer, and Dashboard
+
+The top bar stays visible while scrolling and has a "Host a session" button on every page except the dashboard. The site has a full footer with links and team credits, and the dashboard has a simpler "Study sessions" heading.
+
+- [x] Implemented
+- **Demo GIF:**
+
+  ![Updated Top Bar, Footer, and Dashboard demo](gifs/account-switching.gif)
 
 ## Installation Instructions
 

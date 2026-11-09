@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { apiRequest } from '../../api.js'
+import { useStudent } from '../../student/StudentContext.jsx'
 
-export const DEMO_STUDENT_ID = 1
-
-// Loads one session and handles RSVP / cancel, editing and deleting. Shared by every details layout.
+// Loads one session and handles RSVP / cancel and deleting. Shared by every details layout.
 export function useSessionDetails(id) {
+  const { student } = useStudent()
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -14,7 +14,6 @@ export function useSessionDetails(id) {
   const [retryToken, setRetryToken] = useState(0)
   const [participantRefreshFailed, setParticipantRefreshFailed] = useState(false)
   const [managementError, setManagementError] = useState('')
-  const [managementNotice, setManagementNotice] = useState('')
   const [deletingSession, setDeletingSession] = useState(false)
 
   useEffect(() => {
@@ -46,7 +45,7 @@ export function useSessionDetails(id) {
   }, [id, retryToken])
 
   const isMember = Boolean(session?.participants.some(
-    (participant) => participant.id === DEMO_STUDENT_ID,
+    (participant) => participant.id === student.id,
   ))
 
   const retry = useCallback(() => {
@@ -67,7 +66,7 @@ export function useSessionDetails(id) {
     try {
       if (isMember) {
         await apiRequest(
-          `/sessions/${encodeURIComponent(id)}/members/${DEMO_STUDENT_ID}`,
+          `/sessions/${encodeURIComponent(id)}/members/${student.id}`,
           { method: 'DELETE' },
         )
         membershipUpdated = true
@@ -76,7 +75,7 @@ export function useSessionDetails(id) {
         await apiRequest(`/sessions/${encodeURIComponent(id)}/members`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ student_id: DEMO_STUDENT_ID }),
+          body: JSON.stringify({ student_id: student.id }),
         })
         membershipUpdated = true
         setNotice('You’re on the list. See you there.')
@@ -97,25 +96,10 @@ export function useSessionDetails(id) {
     }
   }
 
-  // Called after the edit form saves. Reloads in place so the page doesn't flash a spinner.
-  async function refreshAfterEdit() {
-    setManagementError('')
-    setManagementNotice('')
-
-    try {
-      const data = await apiRequest(`/sessions/${encodeURIComponent(id)}`)
-      setSession(data.session)
-      setManagementNotice('Your study session has been updated.')
-    } catch (requestError) {
-      setManagementError(`Your changes were saved, but the page could not refresh: ${requestError.message}`)
-    }
-  }
-
   // Returns true once the session is gone, so the page can navigate away.
   async function deleteSession() {
     setDeletingSession(true)
     setManagementError('')
-    setManagementNotice('')
 
     try {
       await apiRequest(`/sessions/${encodeURIComponent(id)}`, { method: 'DELETE' })
@@ -138,10 +122,8 @@ export function useSessionDetails(id) {
     actionError,
     notice,
     participantRefreshFailed,
-    refreshAfterEdit,
     deleteSession,
     deletingSession,
     managementError,
-    managementNotice,
   }
 }

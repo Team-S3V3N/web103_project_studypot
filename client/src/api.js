@@ -1,9 +1,13 @@
+import { readStoredStudentId } from './student/students.js'
+
 export async function apiRequest(path, options = {}) {
   const { headers, ...requestOptions } = options
   const response = await fetch(`/api${path}`, {
     ...requestOptions,
     headers: {
       Accept: 'application/json',
+      // Tells the server who is asking, so it can check who hosts a session.
+      'X-Student-Id': String(readStoredStudentId()),
       ...headers,
     },
   })

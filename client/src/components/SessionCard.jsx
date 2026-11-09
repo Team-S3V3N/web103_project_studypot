@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
 import { formatSessionTime, getSessionDateParts } from '../lib/formatters.js'
+import { useStudent } from '../student/StudentContext.jsx'
+import { isHost } from '../student/students.js'
 import { describeAttendance, getSessionStatus } from '../lib/sessionStatus.js'
 
 function SessionCard({ session, now, onEdit, onDelete, deleting = false }) {
+  const { student } = useStudent()
   const { month, day, weekday } = getSessionDateParts(session.session_date)
   const status = getSessionStatus(session, now)
   const count = session.participant_count
@@ -18,7 +21,7 @@ function SessionCard({ session, now, onEdit, onDelete, deleting = false }) {
           <p className="session-subject">{session.subject}</p>
           <p className="session-time">
             <span className="visually-hidden">{month} {day}, </span>
-            {weekday} · {formatSessionTime(session.session_time)}
+            {weekday && `${weekday} · `}{formatSessionTime(session.session_time)}
           </p>
         </div>
         <span className={`status-tag status-${status.state}`}>{status.label}</span>
@@ -32,25 +35,27 @@ function SessionCard({ session, now, onEdit, onDelete, deleting = false }) {
 
       <div className="session-card-footer">
         <span className="attending">{describeAttendance(count)}</span>
-        <div className="session-card-actions">
-          <button
-            className="card-action"
-            type="button"
-            aria-label={`Edit ${session.title}`}
-            onClick={() => onEdit(session)}
-          >
-            Edit
-          </button>
-          <button
-            className="card-action card-action-danger"
-            type="button"
-            aria-label={`Delete ${session.title}`}
-            disabled={deleting}
-            onClick={() => onDelete(session)}
-          >
-            {deleting ? 'Deleting…' : 'Delete'}
-          </button>
-        </div>
+        {isHost(session, student) && (
+          <div className="session-card-actions">
+            <button
+              className="card-action"
+              type="button"
+              aria-label={`Edit ${session.title}`}
+              onClick={() => onEdit(session)}
+            >
+              Edit
+            </button>
+            <button
+              className="card-action card-action-danger"
+              type="button"
+              aria-label={`Delete ${session.title}`}
+              disabled={deleting}
+              onClick={() => onDelete(session)}
+            >
+              {deleting ? 'Deleting…' : 'Delete'}
+            </button>
+          </div>
+        )}
       </div>
     </article>
   )

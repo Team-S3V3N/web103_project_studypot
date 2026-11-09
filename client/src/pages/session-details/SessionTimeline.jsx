@@ -1,4 +1,6 @@
 import { formatSessionDate } from '../../lib/formatters.js'
+import { useStudent } from '../../student/StudentContext.jsx'
+import { isHost } from '../../student/students.js'
 import { describeAttendance } from '../../lib/sessionStatus.js'
 import { getRsvpHeading } from './copy.js'
 import {
@@ -22,8 +24,9 @@ function buildSteps(times, now) {
 }
 
 // Session details: everything needed to decide up top, then a step-by-step plan for the session.
-function SessionTimeline({ details, status, now, onEdit, onDelete }) {
+function SessionTimeline({ details, status, now, notice, onEdit, onDelete }) {
   const { session } = details
+  const { student } = useStudent()
   const steps = status.times ? buildSteps(status.times, now) : []
 
   return (
@@ -46,21 +49,23 @@ function SessionTimeline({ details, status, now, onEdit, onDelete }) {
             <span className="timeline-dot" aria-hidden="true" />
             <Icon name="pin" /> {session.location}
           </p>
-          <div className="host-actions">
-            <button className="button button-secondary" type="button" onClick={onEdit}>
-              Edit session
-            </button>
-            <button
-              className="button button-danger"
-              type="button"
-              disabled={details.deletingSession}
-              onClick={onDelete}
-            >
-              {details.deletingSession ? 'Deleting…' : 'Delete session'}
-            </button>
-          </div>
+          {isHost(session, student) && (
+            <div className="host-actions">
+              <button className="button button-secondary" type="button" onClick={onEdit}>
+                Edit session
+              </button>
+              <button
+                className="button button-danger"
+                type="button"
+                disabled={details.deletingSession}
+                onClick={onDelete}
+              >
+                {details.deletingSession ? 'Deleting…' : 'Delete session'}
+              </button>
+            </div>
+          )}
           {details.managementError && <p className="form-error host-message" role="alert">{details.managementError}</p>}
-          {details.managementNotice && <p className="success-notice host-message" role="status">{details.managementNotice}</p>}
+          {notice && <p className="success-notice host-message" role="status">{notice}</p>}
         </div>
 
         <div className="timeline-rsvp">
