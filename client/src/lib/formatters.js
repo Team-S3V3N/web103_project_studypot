@@ -41,3 +41,37 @@ export function formatSessionTime(value) {
 
   return `${displayHour}:${String(minute).padStart(2, '0')} ${period}`
 }
+
+// "2:00 – 4:00 PM", or "11:00 AM – 1:00 PM" when the two halves of the day differ.
+export function formatSessionTimeRange(start, end) {
+  if (!start || !end) {
+    return formatSessionTime(start)
+  }
+
+  const startLabel = formatSessionTime(start)
+  const endLabel = formatSessionTime(end)
+  const samePeriod = startLabel.slice(-2) === endLabel.slice(-2)
+
+  return `${samePeriod ? startLabel.slice(0, -3) : startLabel} – ${endLabel}`
+}
+
+// Minutes from start to end ("14:00", "15:30" -> 90), or null if either is missing.
+export function minutesBetween(start, end) {
+  if (!start || !end) {
+    return null
+  }
+
+  const toMinutes = (value) => {
+    const [hour, minute] = value.split(':').map(Number)
+    return hour * 60 + minute
+  }
+
+  return toMinutes(end) - toMinutes(start)
+}
+
+// 90 -> "1 hr 30 min"
+export function formatDuration(minutes) {
+  const hours = Math.floor(minutes / 60)
+  const rest = minutes % 60
+  return [hours && `${hours} hr`, rest && `${rest} min`].filter(Boolean).join(' ')
+}

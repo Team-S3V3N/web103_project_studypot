@@ -16,8 +16,10 @@ CREATE TABLE study_sessions (
   description TEXT,
   session_date DATE NOT NULL,
   session_time TIME NOT NULL,
+  end_time TIME NOT NULL,
   location VARCHAR(200) NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT session_ends_after_start CHECK (end_time > session_time)
 );
 
 CREATE TABLE session_memberships (
@@ -33,17 +35,17 @@ INSERT INTO students (id, name, email) VALUES
   (3, 'Taylor Rivera', 'taylor.rivera@example.com');
 
 INSERT INTO study_sessions
-  (id, creator_id, title, subject, description, session_date, session_time, location)
+  (id, creator_id, title, subject, description, session_date, session_time, end_time, location)
 VALUES
   (1, 1, 'Calculus II problem-solving', 'Mathematics',
    'Work through integration techniques and practice problems together.',
-   CURRENT_DATE + 1, '14:00', 'Library, Room 204'),
+   CURRENT_DATE + 1, '14:00', '16:00', 'Library, Room 204'),
   (2, 2, 'Organic chemistry review', 'Chemistry',
    'Review reaction mechanisms and prepare for the upcoming quiz.',
-   CURRENT_DATE + 2, '16:30', 'Science Center, Study Room B'),
+   CURRENT_DATE + 2, '16:30', '18:00', 'Science Center, Study Room B'),
   (3, 3, 'Intro to psychology study group', 'Psychology',
    'Compare notes on learning, memory, and cognition.',
-   CURRENT_DATE + 3, '11:00', 'Student Union, Table 8');
+   CURRENT_DATE + 3, '11:00', '12:30', 'Student Union, Table 8');
 
 INSERT INTO session_memberships (student_id, session_id) VALUES
   (1, 1),

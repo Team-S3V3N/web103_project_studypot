@@ -1,4 +1,4 @@
-import { formatSessionDate } from '../../lib/formatters.js'
+import { formatSessionDate, formatSessionTimeRange } from '../../lib/formatters.js'
 import { useStudent } from '../../student/StudentContext.jsx'
 import { isHost } from '../../student/students.js'
 import { describeAttendance } from '../../lib/sessionStatus.js'
@@ -19,12 +19,12 @@ function buildSteps(times, now) {
   return [
     { at: times.opensAt, time: times.opensAtLabel, title: 'Session opens', text: 'Arrive early and find your group.' },
     { at: times.start, time: times.startLabel, title: 'Session starts', text: 'The host kicks things off.' },
-    { at: times.endsAt, time: `~${times.endsAtLabel}`, title: 'Wraps up', text: 'Estimated. Stay as long as you need.' },
+    { at: times.endsAt, time: times.endsAtLabel, title: 'Session ends', text: 'Time to wrap up and head out.' },
   ].map((step) => ({ ...step, done: now >= step.at }))
 }
 
 // Session details: everything needed to decide up top, then a step-by-step plan for the session.
-function SessionTimeline({ details, status, now, notice, onEdit, onDelete }) {
+function SessionTimeline({ details, status, now, onEdit, onDelete }) {
   const { session } = details
   const { student } = useStudent()
   const steps = status.times ? buildSteps(status.times, now) : []
@@ -45,7 +45,7 @@ function SessionTimeline({ details, status, now, notice, onEdit, onDelete }) {
           </p>
           <p className="timeline-when">
             <Icon name="calendar" /> {formatSessionDate(session.session_date)}
-            {status.times && <> at {status.times.startLabel}</>}
+            {status.times && <>, {formatSessionTimeRange(session.session_time, session.end_time)}</>}
             <span className="timeline-dot" aria-hidden="true" />
             <Icon name="pin" /> {session.location}
           </p>
@@ -65,7 +65,6 @@ function SessionTimeline({ details, status, now, notice, onEdit, onDelete }) {
             </div>
           )}
           {details.managementError && <p className="form-error host-message" role="alert">{details.managementError}</p>}
-          {notice && <p className="success-notice host-message" role="status">{notice}</p>}
         </div>
 
         <div className="timeline-rsvp">

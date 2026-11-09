@@ -1,4 +1,4 @@
-import { ASSUMED_LENGTH_MINUTES, getSessionStart } from './sessionStatus.js'
+import { getSessionEnd, getSessionStart } from './sessionStatus.js'
 
 function pad(value) {
   return String(value).padStart(2, '0')
@@ -19,12 +19,12 @@ function escapeIcsText(value = '') {
 
 export function buildCalendarFile(session, pageUrl) {
   const start = getSessionStart(session)
+  const end = getSessionEnd(session)
 
-  if (!start) {
+  if (!start || !end) {
     return null
   }
 
-  const end = new Date(start.getTime() + ASSUMED_LENGTH_MINUTES * 60 * 1000)
   const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
   const description = [session.description, `Hosted by ${session.creator_name}`, pageUrl]
     .filter(Boolean)

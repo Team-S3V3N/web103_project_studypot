@@ -6,8 +6,17 @@ const editableFields = [
   'description',
   'session_date',
   'session_time',
+  'end_time',
   'location',
 ]
+
+const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/
+const END_BEFORE_START_ERROR = 'end_time must be later than session_time'
+
+// "14:00" and "14:00:00" both become "14:00:00", so times compare as strings.
+function toFullTime(value) {
+  return value.length === 5 ? `${value}:00` : value
+}
 
 function isValidDate(value) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
@@ -22,7 +31,7 @@ function isValidDate(value) {
 
 function validateSessionFields(fields, { partial = false } = {}) {
   const errors = []
-  const requiredFields = ['title', 'subject', 'session_date', 'session_time', 'location']
+  const requiredFields = ['title', 'subject', 'session_date', 'session_time', 'end_time', 'location']
 
   for (const field of requiredFields) {
     if (!partial && (typeof fields[field] !== 'string' || !fields[field].trim())) {
@@ -58,11 +67,17 @@ function validateSessionFields(fields, { partial = false } = {}) {
     errors.push('session_date must be a valid date in YYYY-MM-DD format')
   }
 
-  if ('session_time' in fields && (
-    typeof fields.session_time !== 'string' ||
-    !/^([01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/.test(fields.session_time)
-  )) {
-    errors.push('session_time must be a valid time in HH:MM format')
+  for (const field of ['session_time', 'end_time']) {
+    if (field in fields && (typeof fields[field] !== 'string' || !TIME_PATTERN.test(fields[field]))) {
+      errors.push(`${field} must be a valid time in HH:MM format`)
+    }
+  }
+
+  // Sessions start and end on the same day. When only one of the two times is
+  // being edited, the database check catches an end before the start.
+  if (TIME_PATTERN.test(fields.session_time) && TIME_PATTERN.test(fields.end_time) &&
+      toFullTime(fields.end_time) <= toFullTime(fields.session_time)) {
+    errors.push(END_BEFORE_START_ERROR)
   }
 
   return errors
@@ -80,6 +95,7 @@ function normalizeSessionFields(fields) {
     description: typeof fields.description === 'string' ? fields.description.trim() : null,
     session_date: fields.session_date,
     session_time: fields.session_time,
+    end_time: fields.end_time,
     location: fields.location.trim(),
   }
 }
@@ -269,8 +285,8 @@ export function createSessionsRouter(pool) {
     const { rows } = await pool.query(
       `WITH created_session AS (
          INSERT INTO study_sessions
-           (creator_id, title, subject, description, session_date, session_time, location)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
+           (creator_id, title, subject, description, session_date, session_time, location, end_time)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING *
        ), creator_membership AS (
          INSERT INTO session_memberships (student_id, session_id)
@@ -288,6 +304,7 @@ export function createSessionsRouter(pool) {
         normalized.session_date,
         normalized.session_time,
         normalized.location,
+        normalized.end_time,
       ],
     )
 
@@ -326,12 +343,23 @@ export function createSessionsRouter(pool) {
       (field, index) => `${field} = $${index + 1}`,
     )
 
-    const { rows } = await pool.query(
-      `UPDATE study_sessions SET ${assignments.join(', ')}
-       WHERE id = $${values.length}
-       RETURNING *`,
-      values,
-    )
+    let rows
+    try {
+      ({ rows } = await pool.query(
+        `UPDATE study_sessions SET ${assignments.join(', ')}
+         WHERE id = $${values.length}
+         RETURNING *`,
+        values,
+      ))
+    } catch (error) {
+      if (error.code === '23514' && error.constraint === 'session_ends_after_start') {
+        return response.status(400).json({
+          error: 'Invalid session data',
+          details: [END_BEFORE_START_ERROR],
+        })
+      }
+      throw error
+    }
 
     if (!rows[0]) {
       return response.status(404).json({ error: 'Study session not found' })

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import Spinner from '../components/Spinner.jsx'
+import Toast from '../components/Toast.jsx'
 import { getSessionStatus, useNow } from '../lib/sessionStatus.js'
 import { BackLink } from './session-details/parts.jsx'
 import SessionTimeline from './session-details/SessionTimeline.jsx'
@@ -15,7 +16,7 @@ function SessionDetails() {
   const details = useSessionDetails(id)
   // A "created" or "updated" message handed over by the form page. Shown once:
   // it is cleared from history so a refresh doesn't show it again.
-  const [notice] = useState(location.state?.notice ?? '')
+  const [notice, setNotice] = useState(location.state?.notice ?? '')
 
   useEffect(() => {
     if (location.state?.notice) {
@@ -57,10 +58,10 @@ function SessionDetails() {
         details={details}
         status={getSessionStatus(details.session, now)}
         now={now}
-        notice={notice}
         onEdit={() => navigate(`/sessions/${encodeURIComponent(id)}/edit`)}
         onDelete={handleDeleteSession}
       />
+      {notice && <Toast message={notice} onDone={() => setNotice('')} />}
     </main>
   )
 }

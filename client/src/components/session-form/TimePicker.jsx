@@ -12,12 +12,14 @@ const TIMES = Array.from({ length: 48 }, (_, index) => {
 const DEFAULT_SCROLL_TIME = '15:00'
 
 // "Pick a time" opens every half hour to choose from; the box beside it takes an exact time.
-function TimePicker({ value, onChange, labelId }) {
+// `scrollTo` is where the list opens when nothing is picked yet.
+function TimePicker({ value, onChange, labelId, exactLabel, scrollTo = DEFAULT_SCROLL_TIME }) {
   const [open, setOpen] = useState(false)
   const containerRef = useRef(null)
   const buttonRef = useRef(null)
   const listRef = useRef(null)
   const close = useCallback(() => setOpen(false), [])
+  const valueId = `${labelId}-value`
 
   useDismiss(open, close, containerRef, buttonRef)
 
@@ -27,12 +29,12 @@ function TimePicker({ value, onChange, labelId }) {
     if (!open || !list) {
       return
     }
-    const target = list.querySelector(`[data-time="${value?.slice(0, 5) || DEFAULT_SCROLL_TIME}"]`) ??
+    const target = list.querySelector(`[data-time="${value?.slice(0, 5) || scrollTo}"]`) ??
       list.querySelector(`[data-time="${DEFAULT_SCROLL_TIME}"]`)
     if (target) {
       list.scrollTop = target.parentElement.offsetTop - list.clientHeight / 2 + target.offsetHeight / 2
     }
-  }, [open, value])
+  }, [open, value, scrollTo])
 
   return (
     <div className="time-picker" ref={containerRef}>
@@ -43,16 +45,16 @@ function TimePicker({ value, onChange, labelId }) {
           type="button"
           aria-haspopup="true"
           aria-expanded={open}
-          aria-labelledby={`${labelId} time-trigger-value`}
+          aria-labelledby={`${labelId} ${valueId}`}
           onClick={() => setOpen((isOpen) => !isOpen)}
         >
-          <span id="time-trigger-value" className={value ? '' : 'time-placeholder'}>
+          <span id={valueId} className={value ? '' : 'time-placeholder'}>
             {value ? formatSessionTime(value) : 'Pick a time'}
           </span>
           <span className="caret" aria-hidden="true" />
         </button>
 
-        <ExactTimeInput value={value} onChange={onChange} />
+        <ExactTimeInput value={value} onChange={onChange} label={exactLabel} />
       </div>
 
       {open && (

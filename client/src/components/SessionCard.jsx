@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { formatSessionTime, getSessionDateParts } from '../lib/formatters.js'
+import { formatSessionTimeRange, getSessionDateParts } from '../lib/formatters.js'
 import { useStudent } from '../student/StudentContext.jsx'
 import { isHost } from '../student/students.js'
 import { describeAttendance, getSessionStatus } from '../lib/sessionStatus.js'
@@ -21,7 +21,7 @@ function SessionCard({ session, now, onEdit, onDelete, deleting = false }) {
           <p className="session-subject">{session.subject}</p>
           <p className="session-time">
             <span className="visually-hidden">{month} {day}, </span>
-            {weekday && `${weekday} · `}{formatSessionTime(session.session_time)}
+            {weekday && `${weekday} · `}{formatSessionTimeRange(session.session_time, session.end_time)}
           </p>
         </div>
         <span className={`status-tag status-${status.state}`}>{status.label}</span>
