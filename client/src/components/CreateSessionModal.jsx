@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { apiRequest } from '../api.js'
-import { CURRENT_STUDENT } from '../lib/currentStudent.js'
+import { useStudent } from '../student/StudentContext.jsx'
 
 function getLocalDate() {
   const now = new Date()
@@ -13,6 +13,7 @@ function getLocalDate() {
 
 // Pass `session` to edit an existing session; leave it out to host a new one.
 function CreateSessionModal({ session, onClose, onCreated }) {
+  const { student } = useStudent()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const isEditing = Boolean(session)
@@ -29,7 +30,7 @@ function CreateSessionModal({ session, onClose, onCreated }) {
       await apiRequest(isEditing ? `/sessions/${encodeURIComponent(session.id)}` : '/sessions', {
         method: isEditing ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(isEditing ? sessionFields : { ...sessionFields, creator_id: CURRENT_STUDENT.id }),
+        body: JSON.stringify(isEditing ? sessionFields : { ...sessionFields, creator_id: student.id }),
       })
       onCreated()
     } catch (requestError) {

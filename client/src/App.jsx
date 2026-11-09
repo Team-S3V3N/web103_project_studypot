@@ -6,7 +6,7 @@ import ProfileMenu from './components/ProfileMenu.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import SessionDetails from './pages/SessionDetails.jsx'
 import SignIn from './pages/SignIn.jsx'
-import { CURRENT_STUDENT } from './lib/currentStudent.js'
+import { StudentProvider, useStudent } from './student/StudentContext.jsx'
 import './App.css'
 
 const SIGNED_OUT_KEY = 'studypot-signed-out'
@@ -21,6 +21,7 @@ function readSignedIn() {
 
 function AppLayout() {
   const { campus } = useCampus()
+  const { student } = useStudent()
   const [signedIn, setSignedIn] = useState(readSignedIn)
 
   useEffect(() => {
@@ -48,7 +49,18 @@ function AppLayout() {
 
           <div className="header-tools">
             <CampusSwitcher />
-            {signedIn && <ProfileMenu student={CURRENT_STUDENT} onSignOut={() => setSignedIn(false)} />}
+            {signedIn && (
+              <>
+                <ProfileMenu student={student} />
+                <button
+                  className="header-menu-button logout-button"
+                  type="button"
+                  onClick={() => setSignedIn(false)}
+                >
+                  Log out
+                </button>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -70,7 +82,7 @@ function AppLayout() {
           />
         </Routes>
       ) : (
-        <SignIn student={CURRENT_STUDENT} onSignIn={() => setSignedIn(true)} />
+        <SignIn student={student} onSignIn={() => setSignedIn(true)} />
       )}
 
       <footer className="site-footer">
@@ -87,7 +99,9 @@ function App() {
   return (
     <BrowserRouter>
       <CampusProvider>
-        <AppLayout />
+        <StudentProvider>
+          <AppLayout />
+        </StudentProvider>
       </CampusProvider>
     </BrowserRouter>
   )

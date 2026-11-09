@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
 import { formatSessionTime, getSessionDateParts } from '../lib/formatters.js'
-import { isHost } from '../lib/currentStudent.js'
+import { useStudent } from '../student/StudentContext.jsx'
+import { isHost } from '../student/students.js'
 import { describeAttendance, getSessionStatus } from '../lib/sessionStatus.js'
 
 function SessionCard({ session, now, onEdit, onDelete, deleting = false }) {
+  const { student } = useStudent()
   const { month, day, weekday } = getSessionDateParts(session.session_date)
   const status = getSessionStatus(session, now)
   const count = session.participant_count
@@ -33,7 +35,7 @@ function SessionCard({ session, now, onEdit, onDelete, deleting = false }) {
 
       <div className="session-card-footer">
         <span className="attending">{describeAttendance(count)}</span>
-        {isHost(session) && (
+        {isHost(session, student) && (
           <div className="session-card-actions">
             <button
               className="card-action"

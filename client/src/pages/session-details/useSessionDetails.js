@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { apiRequest } from '../../api.js'
-import { CURRENT_STUDENT } from '../../lib/currentStudent.js'
-
-const DEMO_STUDENT_ID = CURRENT_STUDENT.id
+import { useStudent } from '../../student/StudentContext.jsx'
 
 // Loads one session and handles RSVP / cancel, editing and deleting. Shared by every details layout.
 export function useSessionDetails(id) {
+  const { student } = useStudent()
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -47,7 +46,7 @@ export function useSessionDetails(id) {
   }, [id, retryToken])
 
   const isMember = Boolean(session?.participants.some(
-    (participant) => participant.id === DEMO_STUDENT_ID,
+    (participant) => participant.id === student.id,
   ))
 
   const retry = useCallback(() => {
@@ -68,7 +67,7 @@ export function useSessionDetails(id) {
     try {
       if (isMember) {
         await apiRequest(
-          `/sessions/${encodeURIComponent(id)}/members/${DEMO_STUDENT_ID}`,
+          `/sessions/${encodeURIComponent(id)}/members/${student.id}`,
           { method: 'DELETE' },
         )
         membershipUpdated = true
@@ -77,7 +76,7 @@ export function useSessionDetails(id) {
         await apiRequest(`/sessions/${encodeURIComponent(id)}/members`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ student_id: DEMO_STUDENT_ID }),
+          body: JSON.stringify({ student_id: student.id }),
         })
         membershipUpdated = true
         setNotice('You’re on the list. See you there.')

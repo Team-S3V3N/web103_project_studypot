@@ -1,5 +1,6 @@
 import { formatSessionDate } from '../../lib/formatters.js'
-import { isHost } from '../../lib/currentStudent.js'
+import { useStudent } from '../../student/StudentContext.jsx'
+import { isHost } from '../../student/students.js'
 import { describeAttendance } from '../../lib/sessionStatus.js'
 import { getRsvpHeading } from './copy.js'
 import {
@@ -25,6 +26,7 @@ function buildSteps(times, now) {
 // Session details: everything needed to decide up top, then a step-by-step plan for the session.
 function SessionTimeline({ details, status, now, onEdit, onDelete }) {
   const { session } = details
+  const { student } = useStudent()
   const steps = status.times ? buildSteps(status.times, now) : []
 
   return (
@@ -47,7 +49,7 @@ function SessionTimeline({ details, status, now, onEdit, onDelete }) {
             <span className="timeline-dot" aria-hidden="true" />
             <Icon name="pin" /> {session.location}
           </p>
-          {isHost(session) && (
+          {isHost(session, student) && (
             <div className="host-actions">
               <button className="button button-secondary" type="button" onClick={onEdit}>
                 Edit session

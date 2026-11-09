@@ -124,7 +124,8 @@
   outline-offset: 2px;
 }
 
-.campus-switcher-button {
+.campus-switcher-button,
+.logout-button {
   color: var(--muted);
 }
 
@@ -166,6 +167,13 @@
   height: 40px;
   flex-basis: 40px;
   font-size: 14px;
+}
+
+.avatar-small {
+  width: 26px;
+  height: 26px;
+  flex-basis: 26px;
+  font-size: 11px;
 }
 
 .dropdown {
@@ -275,6 +283,7 @@
   color: var(--subtle);
   font-size: 13px;
 }
+
 
 /* ---------- Shared type and controls ---------- */
 

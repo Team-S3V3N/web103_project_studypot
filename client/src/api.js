@@ -1,4 +1,4 @@
-import { CURRENT_STUDENT } from './lib/currentStudent.js'
+import { readStoredStudentId } from './student/students.js'
 
 export async function apiRequest(path, options = {}) {
   const { headers, ...requestOptions } = options
@@ -7,7 +7,7 @@ export async function apiRequest(path, options = {}) {
     headers: {
       Accept: 'application/json',
       // Tells the server who is asking, so it can check who hosts a session.
-      'X-Student-Id': String(CURRENT_STUDENT.id),
+      'X-Student-Id': String(readStoredStudentId()),
       ...headers,
     },
   })
