@@ -12,6 +12,7 @@ const sampleSession = {
   description: 'Practice integration.',
   session_date: '2026-11-01',
   session_time: '14:00:00',
+  end_time: '16:00:00',
   location: 'Library',
 }
 
@@ -31,6 +32,13 @@ async function createTestServer() {
       }
 
       if (sql.startsWith('UPDATE study_sessions')) {
+        // Stands in for the session_ends_after_start check in reset.sql.
+        if (sql.includes('session_time =') && values[0] >= sampleSession.end_time) {
+          throw Object.assign(new Error('check violation'), {
+            code: '23514',
+            constraint: 'session_ends_after_start',
+          })
+        }
         const row = values.at(-1) === 1
           ? { ...sampleSession, [sql.match(/SET (\w+)/)?.[1]]: values[0] }
           : undefined
@@ -203,6 +211,56 @@ describe('study session API', () => {
     assert.equal(response.status, 201)
     assert.equal(body.session.title, sampleSession.title)
     assert.match(testServer.calls.at(-1).sql, /INSERT INTO session_memberships/)
+  })
+
+  it('requires an end time later than the start time', async () => {
+    const callCount = testServer.calls.length
+    const missing = await fetch(testServer.url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ...sampleSession, end_time: undefined, creator_id: 1 }),
+    })
+    const backwards = await fetch(testServer.url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ...sampleSession, end_time: '13:30', creator_id: 1 }),
+    })
+    const sameTime = await fetch(`${testServer.url}/1`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-student-id': '1' },
+      body: JSON.stringify({ session_time: '15:00', end_time: '15:00:00' }),
+    })
+
+    assert.equal(missing.status, 400)
+    assert.ok((await missing.json()).details.includes('end_time is required'))
+    assert.equal(backwards.status, 400)
+    assert.ok((await backwards.json()).details.includes('end_time must be later than session_time'))
+    assert.equal(sameTime.status, 400)
+    assert.equal(testServer.calls.length, callCount)
+  })
+
+  it('rejects a new start time that falls after the saved end time', async () => {
+    const response = await fetch(`${testServer.url}/1`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-student-id': '1' },
+      body: JSON.stringify({ session_time: '17:00' }),
+    })
+    const body = await response.json()
+
+    assert.equal(response.status, 400)
+    assert.deepEqual(body.details, ['end_time must be later than session_time'])
+  })
+
+  it('stores the end time when creating a session', async () => {
+    await fetch(testServer.url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ...sampleSession, end_time: '15:30', creator_id: 1 }),
+    })
+    const insert = testServer.calls.findLast(({ sql }) => sql.includes('INSERT INTO study_sessions'))
+
+    assert.match(insert.sql, /end_time/)
+    assert.equal(insert.values.at(-1), '15:30')
   })
 
   it('updates supplied session fields', async () => {

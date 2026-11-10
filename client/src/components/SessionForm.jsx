@@ -1,11 +1,24 @@
 import { useEffect, useMemo, useState } from 'react'
 import { apiRequest } from '../api.js'
+import { formatDuration, minutesBetween } from '../lib/formatters.js'
 import { useStudent } from '../student/StudentContext.jsx'
 import CalendarPicker from './session-form/CalendarPicker.jsx'
 import TimePicker from './session-form/TimePicker.jsx'
 import './session-form/sessionForm.css'
 
 const MAX_SUBJECT_CHIPS = 8
+// Quick picks that set the end time from the start time.
+const LENGTH_CHOICES = [60, 90, 120, 180]
+
+// "14:00" + 90 -> "15:30". Returns null past midnight, since sessions end the day they start.
+function addMinutes(time, minutes) {
+  const [hour, minute] = time.split(':').map(Number)
+  const total = hour * 60 + minute + minutes
+  if (total >= 24 * 60) {
+    return null
+  }
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+}
 
 // Loads every session once, for the calendar dots and the subject shortcuts.
 // If it fails the form still works, just without those extras.
@@ -35,12 +48,16 @@ function SessionForm({ session, onSaved, onCancel }) {
     description: session?.description ?? '',
     session_date: session?.session_date?.slice(0, 10) ?? '',
     session_time: session?.session_time?.slice(0, 5) ?? '',
+    end_time: session?.end_time?.slice(0, 5) ?? '',
   })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [dateError, setDateError] = useState('')
   const [timeError, setTimeError] = useState('')
+  const [endTimeError, setEndTimeError] = useState('')
   const isEditing = Boolean(session)
+  const length = minutesBetween(fields.session_time, fields.end_time)
+  const endsTooEarly = length !== null && length <= 0
 
   function setField(name, value) {
     setFields((current) => ({ ...current, [name]: value }))
@@ -71,9 +88,11 @@ function SessionForm({ session, onSaved, onCancel }) {
 
     const missingDate = !fields.session_date
     const missingTime = !fields.session_time
+    const missingEndTime = !fields.end_time
     setDateError(missingDate ? 'Pick a date on the calendar.' : '')
-    setTimeError(missingTime ? 'Pick a time.' : '')
-    if (missingDate || missingTime) {
+    setTimeError(missingTime ? 'Pick a start time.' : '')
+    setEndTimeError(missingEndTime ? 'Pick an end time.' : '')
+    if (missingDate || missingTime || missingEndTime || endsTooEarly) {
       return
     }
 
@@ -186,16 +205,60 @@ function SessionForm({ session, onSaved, onCancel }) {
           </div>
 
           <div className="field">
-            <span id="form-time-label" className="field-label">Time</span>
+            <span id="form-time-label" className="field-label">Start time</span>
             <TimePicker
               value={fields.session_time}
               labelId="form-time-label"
+              exactLabel="Exact start time"
               onChange={(value) => {
                 setField('session_time', value)
                 setTimeError('')
               }}
             />
             {timeError && <p className="form-error" role="alert">{timeError}</p>}
+          </div>
+
+          <div className="field">
+            <span id="form-end-time-label" className="field-label">End time</span>
+            <TimePicker
+              value={fields.end_time}
+              labelId="form-end-time-label"
+              exactLabel="Exact end time"
+              scrollTo={(fields.session_time && addMinutes(fields.session_time, 120)) || undefined}
+              onChange={(value) => {
+                setField('end_time', value)
+                setEndTimeError('')
+              }}
+            />
+            {fields.session_time && (
+              <div className="chip-list" role="group" aria-label="Session length">
+                {LENGTH_CHOICES.map((minutes) => {
+                  const end = addMinutes(fields.session_time, minutes)
+                  return (
+                    <button
+                      key={minutes}
+                      type="button"
+                      className="chip"
+                      disabled={!end}
+                      aria-pressed={length === minutes}
+                      onClick={() => {
+                        setField('end_time', end)
+                        setEndTimeError('')
+                      }}
+                    >
+                      {formatDuration(minutes)}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+            {endsTooEarly ? (
+              <p className="form-error" role="alert">End time must be after the start time.</p>
+            ) : endTimeError ? (
+              <p className="form-error" role="alert">{endTimeError}</p>
+            ) : length !== null && (
+              <p className="field-hint">Lasts {formatDuration(length)}</p>
+            )}
           </div>
         </section>
       </div>

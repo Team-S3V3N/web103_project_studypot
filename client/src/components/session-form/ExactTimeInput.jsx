@@ -33,7 +33,7 @@ function parseTypedTime(text, period) {
 }
 
 // A plain "4:15" box with an AM | PM switch beside it.
-function ExactTimeInput({ value, onChange }) {
+function ExactTimeInput({ value, onChange, label = 'Exact time' }) {
   const [text, setText] = useState(value ? splitTime(value).text : '')
   const [period, setPeriod] = useState(value ? splitTime(value).period : 'PM')
   const [syncedValue, setSyncedValue] = useState(value)
@@ -72,7 +72,7 @@ function ExactTimeInput({ value, onChange }) {
         type="text"
         inputMode="text"
         placeholder="e.g. 4:15"
-        aria-label="Exact time"
+        aria-label={label}
         maxLength="5"
         value={text}
         onChange={(event) => handleTextChange(event.target.value)}

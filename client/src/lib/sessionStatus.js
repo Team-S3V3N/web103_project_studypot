@@ -3,19 +3,26 @@ import { formatSessionTime } from './formatters.js'
 
 // A session "opens" this many minutes before its start time.
 export const OPENS_MINUTES_BEFORE = 15
-// Sessions have no end time yet, so treat each one as lasting this long.
-export const ASSUMED_LENGTH_MINUTES = 120
 
 const MINUTE = 60 * 1000
 
-export function getSessionStart(session) {
-  if (!session.session_date || !session.session_time) {
+function atTimeOnSessionDay(session, time) {
+  if (!session.session_date || !time) {
     return null
   }
 
   const [year, month, day] = session.session_date.slice(0, 10).split('-').map(Number)
-  const [hour, minute] = session.session_time.split(':').map(Number)
+  const [hour, minute] = time.split(':').map(Number)
   return new Date(year, month - 1, day, hour, minute)
+}
+
+export function getSessionStart(session) {
+  return atTimeOnSessionDay(session, session.session_time)
+}
+
+// Sessions end on the same day they start.
+export function getSessionEnd(session) {
+  return atTimeOnSessionDay(session, session.end_time)
 }
 
 function describeTimeUntil(start, now) {
@@ -44,13 +51,13 @@ function describeTimeUntil(start, now) {
 // state: 'scheduled' (not open yet), 'open' (15 min before start until it ends), 'ended', or 'unknown'
 export function getSessionStatus(session, now = new Date()) {
   const start = getSessionStart(session)
+  const endsAt = getSessionEnd(session)
 
-  if (!start) {
+  if (!start || !endsAt) {
     return { state: 'unknown', label: 'Time to be announced' }
   }
 
   const opensAt = new Date(start.getTime() - OPENS_MINUTES_BEFORE * MINUTE)
-  const endsAt = new Date(start.getTime() + ASSUMED_LENGTH_MINUTES * MINUTE)
   const times = {
     opensAt,
     start,

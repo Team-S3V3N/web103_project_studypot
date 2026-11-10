@@ -89,6 +89,12 @@
   color: var(--on-brand);
 }
 
+.chip:disabled {
+  border-color: var(--rule);
+  color: var(--subtle);
+  cursor: not-allowed;
+}
+
 /* Calendar */
 
 .calendar {
