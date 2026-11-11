@@ -3,9 +3,9 @@
 **CodePath WEB103 Final Project**
 
 **Designed and developed by:** 
-Dinakar Balehonniga Lingaraju
-Manushri Muruga Kumar
-Khushal Sai
+Dinakar Balehonniga Lingaraju |
+Manushri Muruga Kumar |
+Khushal Sai |
 Tsheten Sherpa
 
 **Link to deployed app:** Coming soon 
