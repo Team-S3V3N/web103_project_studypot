@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "start": "npx http-server ./dist",
     "build": "vite build",
     "lint": "oxlint",
     "test": "node --test",
