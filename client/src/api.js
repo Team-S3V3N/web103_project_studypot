@@ -1,6 +1,6 @@
 import { readStoredStudentId } from './student/students.js'
 
-const API_BASE_URL = import.meta.env.PROD
+const API_BASE_URL = import.meta.env?.PROD
   ? 'https://web103-project-studypot.onrender.com'
   : ''
 
