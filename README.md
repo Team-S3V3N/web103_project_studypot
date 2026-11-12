@@ -8,7 +8,7 @@ Manushri Muruga Kumar |
 Khushal Sai |
 Tsheten Sherpa
 
-**Link to deployed app:** Coming soon 
+**Link to deployed app:** [StudyPot](https://client-kzw2.onrender.com/) 
 
 ## About
 
