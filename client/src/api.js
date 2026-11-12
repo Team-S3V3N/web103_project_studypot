@@ -1,8 +1,12 @@
 import { readStoredStudentId } from './student/students.js'
 
+const API_BASE_URL = import.meta.env.PROD
+  ? 'https://web103-project-studypot.onrender.com'
+  : ''
+
 export async function apiRequest(path, options = {}) {
   const { headers, ...requestOptions } = options
-  const response = await fetch(`/api${path}`, {
+  const response = await fetch(`${API_BASE_URL}/api${path}`, {
     ...requestOptions,
     headers: {
       Accept: 'application/json',
