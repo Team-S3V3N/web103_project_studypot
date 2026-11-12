@@ -155,6 +155,8 @@ The top bar stays visible while scrolling and has a "Host a session" button on e
 
 6. Open the frontend at `http://localhost:5173`.
 
+The server runs safe, additive database migrations before listening. The end-time migration fills existing sessions with a 90-minute duration (or ends them at 11:59:59 PM when less than 90 minutes remain that day); it does not reset or delete existing data.
+
 The API runs at `http://localhost:3000`. Vite proxies `/api` requests to the backend during development.
 
 ### Study session API
